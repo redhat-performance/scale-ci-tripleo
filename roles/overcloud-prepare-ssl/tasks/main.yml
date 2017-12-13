@@ -1,0 +1,47 @@
+---
+# tasks file for overcloud-prepare-ssl
+
+
+- name: Create a SSL Private Key
+  shell: "openssl genrsa -out /home/stack/overcloud-privkey.pem 2048"
+
+- name: Create Self-Signed CA Certificate
+  shell: "openssl req -new -x509 -key /home/stack/overcloud-privkey.pem -out /home/stack/overcloud-cacert.pem -days 365 -subj '/C=US/ST=NC/L=Raleigh/O=Red Hat/OU=Performance/CN={{external_network_vip}}'"
+  # Use when subjectaltnames configured:
+  #shell: "openssl req -new -x509 -key /home/stack/overcloud-privkey.pem -out /home/stack/overcloud-cacert.pem -days 365 -subj '/C=US/ST=NC/L=Raleigh/O=Red Hat/OU=Performance/CN={{external_network_vip}}' -extensions v3_req"
+
+- name: Copy Self-Signed CA Certificate to trusted store
+  shell: "cp /home/stack/overcloud-cacert.pem /etc/pki/ca-trust/source/anchors/"
+  become: true
+
+- name: Update the CA store
+  shell: "update-ca-trust extract"
+  become: true
+
+- name: Obtain the Private Key
+  shell: "cat /home/stack/overcloud-privkey.pem"
+  register: private_key
+
+- name: Obtain the CA certificate
+  shell: "cat /home/stack/overcloud-cacert.pem"
+  register: cacert
+
+- name: Set ssl_private_key
+  set_fact:
+    ssl_private_key: "{{private_key.stdout | indent(4) | string}}"
+
+- name: Set ssl_certificate
+  set_fact:
+    ssl_certificate: "{{cacert.stdout | indent(4) | string}}"
+
+- name: Deploy SSL/TLS yamls
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - src: "templates/enable-tls.yaml.j2"
+      dest: "/home/stack/templates/enable-tls.yaml"
+    - src: "templates/inject-trust-anchor.yaml.j2"
+      dest: "/home/stack/templates/inject-trust-anchor.yaml"
+    - src: "templates/cloudname.yaml.j2"
+      dest: "/home/stack/templates/cloudname.yaml"

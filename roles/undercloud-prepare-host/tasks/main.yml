@@ -1,0 +1,112 @@
+---
+# tasks file for undercloud-prep
+
+- name: Disable epel
+  shell: rpm -e epel-release
+  ignore_errors: true
+
+- name: Disable beaker repos
+  shell: rm -rf /etc/yum.repos.d/beaker-*
+
+- name: Add custom repos
+  template:
+    src: "templates/undercloud-deploy.repo.j2"
+    dest: /etc/yum.repos.d/undercloud-deploy.repo
+  when: deploy_additional_repos
+
+- name: Get rhos-release
+  get_url:
+    url: "{{rhos_release_rpm}}"
+    dest: /root/rhos-release.rpm
+    validate_certs: false
+
+- name: Install rhos-release
+  yum: name=/root/rhos-release.rpm
+
+- name: Setup OSP version to install
+  command: "rhos-release {{rhos_release}} -r {{rhel_version}}"
+
+- name: Install utilities
+  yum: name={{item}}
+  with_items: "{{utilities}}"
+
+- name: Update Packages
+  yum: name=* state=latest
+
+- name: Reboot machine
+  shell: "nohup sh -c '( sleep 5 ; shutdown -r now )' &"
+  async: 0
+  poll: 0
+  ignore_errors: true
+
+# 8 minute timeout
+- name: Wait for Machine Ready
+  local_action:
+    module: wait_for
+    host: "{{inventory_hostname}}"
+    port: 22
+    delay: 15
+    timeout: 480
+
+- name: Add stack user
+  user: name=stack
+
+# Not entirely sure why the password wouldn't take with the initial command
+- name: Stack user password
+  user:
+    name: stack
+    update_password: always
+    password: "{{stack_password}}"
+
+- name: Sudo for stack user
+  shell: echo "stack ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/stack; chmod 0440 /etc/sudoers.d/stack
+
+- name: Setup authorized key upload
+  authorized_key:
+    user: stack
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: Setup tripleo directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: stack
+    group: stack
+  with_items:
+    - /home/stack/images
+    - /home/stack/templates
+    - /home/stack/templates/firstboot
+
+- name: Install tripleo
+  yum: name=python-tripleoclient
+
+- name: Set hostname
+  shell: hostnamectl set-hostname {{ansible_fqdn}}
+
+- name: Set transient hostname
+  shell: hostnamectl set-hostname --transient {{ansible_fqdn}}
+
+- name: Fix hosts file
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1   {{ansible_fqdn}} {{ansible_hostname}} localhost localhost.localdomain localhost4 localhost4.localdomain4"
+    regexp: "127.0.0.1"
+
+- name: Copy undercloud.conf
+  template:
+    src: "templates/undercloud.{{version}}.conf.j2"
+    dest: /home/stack/undercloud.conf
+    owner: stack
+    group: stack
+
+- name: Deploy Private external vlan interface
+  template:
+    src: templates/ifcfg-vlan.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{external_vlan_device}}"
+    owner: root
+    group: root
+  when: deploy_external_private_vlan
+
+- name: Turn on Private external vlan interface
+  shell: ifup {{external_vlan_device}}
+  when: deploy_external_private_vlan

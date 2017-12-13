@@ -1,0 +1,5 @@
+parameter_defaults:
+  ControllerCount: {{num_controllers}}
+{% for node_type in openstack_deployment_hosts %}
+  {{node_type['host_type']['title']}}Count: {{node_type['host_type']['count']}}
+{% endfor %} 

@@ -1,0 +1,31 @@
+---
+#
+# Playbook deploying and setting up your undercloud for overcloud deployment in scale lab
+# environment or the bagl environment.
+#
+# Tested against OSP 8/9/10 and single-nic-vlans config setup with private external network
+#
+
+- name: Run initial setup tasks
+  hosts: undercloud
+  gather_facts: true
+  remote_user: root
+  roles:
+    - rebuild-undercloud
+    - undercloud-prepare-host
+
+- name: Run OSP install
+  hosts: undercloud
+  gather_facts: false
+  remote_user: stack
+  roles:
+    - undercloud-install
+    - overcloud-prepare-templates
+    - overcloud-deploy
+    - scalelab-inventory
+
+- name: test inv
+  hosts: overcloud
+  gather_facts: false
+  tasks:
+    - setup:

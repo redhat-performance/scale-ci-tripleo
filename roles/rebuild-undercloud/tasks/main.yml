@@ -1,0 +1,34 @@
+---
+# tasks file for rebuild-undercloud
+
+
+- name: Install python nailgun dependency
+  local_action:
+    module: pip
+    name: nailgun
+    state: latest
+    extra_args: "--user"
+
+#- name: Mark undercloud for rebuild
+#  local_action:
+#    module: foreman
+#    username: "{{cloud_title}}"
+#    password: "{{ticket_number}}"
+#    server_url: "{{foreman_url}}"
+#    entity: "{{inventory_hostname}}"
+#    params:
+#      build: true
+
+- name: Reboot undercloud
+  shell: "sleep 5; reboot now"
+  async: 1
+  poll: 0
+  ignore_errors: true
+  
+- name: Wait for Machine Ready
+  local_action:
+    module: wait_for
+    host: "{{inventory_hostname}}"
+    port: 22
+    delay: 600
+    timeout: 2000

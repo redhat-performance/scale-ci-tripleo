@@ -1,0 +1,24 @@
+---
+# tasks file for overcloud-deploy
+
+- name: Install ostag
+  pip:
+    state: latest
+    virtualenv: "{{home_dir}}/ostag-venv"
+    name: git+https://github.com/jkilpatr/ostag
+
+- name: Template the Pinning script
+  template:
+    src: pin-nodes.sh.j2
+    dest: "{{home_dir}}/pin-nodes.sh"
+
+- name: Pin the nodes 
+  shell: "source {{stackrc}}; bash {{home_dir}}/pin-nodes.sh"
+
+- name: Template deploy script
+  template:
+    src: overcloud-deploy.sh.j2
+    dest: "{{home_dir}}/overcloud-deploy.sh"
+    
+- name: Deploy the overcloud
+  shell: "bash {{home_dir}}/overcloud-deploy.sh"

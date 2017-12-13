@@ -1,0 +1,74 @@
+---
+# tasks file for undercloud-install
+
+- name: Install undercloud
+  shell: openstack undercloud install
+
+- name: Install ipa and overcloud images
+  become: true
+  yum: name={{item}}
+  with_items:
+    - rhosp-director-images
+    - rhosp-director-images-ipa
+
+- name: Untar ipa and overcloud images
+  command: "tar -xvf {{item}}  -C /home/stack/images"
+  with_items:
+    - "/usr/share/rhosp-director-images/overcloud-full-latest-{{version}}.0.tar"
+    - "/usr/share/rhosp-director-images/ironic-python-agent-latest-{{version}}.0.tar"
+
+- name: Add debugging root password to images
+  shell: "cd home/stack/iamges; virt-customize -a overcloud-full.qcow2 --root-password password:{{overcloud_image_password}}"
+  environment:
+    LIBGUESTFS_BACKEND: direct 
+
+- name: Upload images
+  shell: . /home/stack/stackrc; openstack overcloud image upload --image-path /home/stack/images/
+
+- name: Get neutron subnet uuid
+  shell: . /home/stack/stackrc; neutron subnet-list|grep start| awk '{print $2}'
+  register: neutron_subnet_uuid
+
+- debug: msg="neutron_subnet_uuid- {{neutron_subnet_uuid}}"
+
+- name: Setup DNS on Undercloud Neutron subnet
+  shell: ". /home/stack/stackrc; neutron subnet-update {{neutron_subnet_uuid.stdout}} --dns-nameserver {{dns_server}}"
+
+- name: Get instackenv.json
+  get_url:
+    url: "{{instackenv_json}}"
+    dest: /home/stack/instackenv.json
+    owner: stack
+    group: stack
+
+- name: Import instackenv.json
+  shell: . /home/stack/stackrc; openstack baremetal import --json /home/stack/instackenv.json
+
+- name: Configure boot
+  shell: . /home/stack/stackrc; openstack baremetal configure boot
+
+- name: Template introspection script
+  template:
+    src: "introspect.sh.j2"
+    dest: "/home/stack/introspect.sh"
+
+- name: Run introspection script
+  shell: "bash /home/stack/introspect.sh"
+
+- name: Remove boot_option:local from ironic nodes
+  shell: . /home/stack/stackrc; ironic node-list | grep None | awk '{print $2}' | xargs -I % ironic node-update % replace properties/capabilities='cpu_vt:true,cpu_hugepages:true,cpu_txt:true,cpu_aes:true,cpu_hugepages_1g:true'
+  when: scale_lab_broke
+
+- name: Generate node-data
+  shell: . /home/stack/stackrc; mkdir ~/node-data; for i in `ironic node-list | grep avail | awk '{print $2}'`; do openstack baremetal introspection data save $i > node-data/$i; done
+
+- name: Remove boot_option:local from flavors
+  shell: ". /home/stack/stackrc; openstack flavor unset --property 'capabilities:boot_option' {{item}}"
+  with_items:
+    - baremetal
+    - compute
+    - control
+    - ceph-storage
+    - block-storage
+    - swift-storage
+  when: scale_lab_broke

@@ -1,0 +1,9 @@
+---
+# defaults file for undercloud-prep
+
+utilities:
+  - tmux
+  - screen
+  - vim
+  - python-virtualenv
+  - libguestfs-tools

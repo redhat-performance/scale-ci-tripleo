@@ -1,0 +1,51 @@
+---
+# tasks file for overcloud-prepare-templates
+
+- name: Clone the templates repo
+  local_action:
+    module: git
+    repo: "{{templates_repo}}"
+    dest: "/tmp/templates/"
+
+- name: Copy over folder for this deployment
+  copy:
+    src: "/tmp/templates/{{templates_repo_path}}"
+    dest: "/home/stack/templates"
+    owner: stack
+    group: stack
+
+- name: Replace controller type with our controller type
+  lineinfile:
+    path: "/home/stack/templates/network-environment.yaml"
+    regexp: "^  OS::TripleO::Controller::Net::SoftwareConfig"
+    state: absent
+
+- name: Replace controller type with our controller type
+  lineinfile:
+    path: "/home/stack/templates/network-environment.yaml"
+    line: "  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{controller_type}}-controller.yaml"
+    insertafter: "^resource_registry:"
+    state: present
+
+- name: Template deploy.yml
+  template:
+    src: deploy.yml.j2
+    dest: "/home/stack/deploy.yml"
+
+# (WARNING) This is more than likely a hack to allow external network addresses on compute nodes
+- name: Fix /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
+  become: true
+  lineinfile:
+    dest: /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
+    line: "  OS::TripleO::Compute::Ports::ExternalPort: ../network/ports/external.yaml"
+    regexp: "  OS::TripleO::Compute::Ports::ExternalPort: ../network/ports/noop.yaml"
+    backup: true
+  when: allow_external_on_compute
+
+- name: Place version metadata json file in /home/stack
+  become: true
+  template:
+    src: "templates/version.json.j2"
+    dest: "{{version_directory}}/version.json"
+    owner: stack
+    group: stack
