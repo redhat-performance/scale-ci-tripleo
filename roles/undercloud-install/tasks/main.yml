@@ -18,7 +18,7 @@
     - "/usr/share/rhosp-director-images/ironic-python-agent-latest-{{version}}.0.tar"
 
 - name: Add debugging root password to images
-  shell: "cd home/stack/iamges; virt-customize -a overcloud-full.qcow2 --root-password password:{{overcloud_image_password}}"
+  shell: "cd /home/stack/images; virt-customize -a overcloud-full.qcow2 --root-password password:{{overcloud_image_password}}"
   environment:
     LIBGUESTFS_BACKEND: direct 
 
