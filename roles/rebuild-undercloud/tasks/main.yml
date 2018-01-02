@@ -7,7 +7,6 @@
     module: pip
     name: nailgun
     state: latest
-    extra_args: "--user"
 
 #- name: Mark undercloud for rebuild
 #  local_action:

@@ -24,8 +24,6 @@
     - overcloud-deploy
     - scalelab-inventory
 
-- name: test inv
-  hosts: overcloud
-  gather_facts: false
-  tasks:
-    - setup:
+- import_playbook: scalelab-pci-passthrough.yaml 
+
+- import_playbook: overcloud-metrics.yml
