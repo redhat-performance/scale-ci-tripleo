@@ -15,7 +15,7 @@
   async: 1
   poll: 0
   ignore_errors: true
-  
+
 - name: Wait for Machine Ready
   local_action:
     module: wait_for

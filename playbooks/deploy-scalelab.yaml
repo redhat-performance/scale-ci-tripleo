@@ -24,6 +24,6 @@
     - overcloud-deploy
     - scalelab-inventory
 
-#- import_playbook: scalelab-pci-passthrough.yaml 
+#- import_playbook: scalelab-pci-passthrough.yaml
 
 - import_playbook: overcloud-metrics.yml
