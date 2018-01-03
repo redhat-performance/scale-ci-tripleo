@@ -1,22 +1,14 @@
 ---
 # tasks file for rebuild-undercloud
 
+- name: Template rebuild script
+  template:
+    src: toggle-rebuild.sh.j2
+    dest: /tmp/toggle-rebuild.sh
+  become: true
 
-- name: Install python nailgun dependency
-  local_action:
-    module: pip
-    name: nailgun
-    state: latest
-
-#- name: Mark undercloud for rebuild
-#  local_action:
-#    module: foreman
-#    username: "{{cloud_title}}"
-#    password: "{{ticket_number}}"
-#    server_url: "{{foreman_url}}"
-#    entity: "{{inventory_hostname}}"
-#    params:
-#      build: true
+- name: Run rebuild script
+  shell: "bash /tmp/toggle-rebuild.sh"
 
 - name: Reboot undercloud
   shell: "sleep 5; reboot now"
