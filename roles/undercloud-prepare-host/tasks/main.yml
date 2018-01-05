@@ -56,7 +56,7 @@
   user:
     name: stack
     update_password: always
-    password: "{{stack_password}}"
+    password: "{{ansible_ssh_pass}}"
 
 - name: Sudo for stack user
   shell: echo "stack ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/stack; chmod 0440 /etc/sudoers.d/stack
@@ -110,11 +110,3 @@
 - name: Turn on Private external vlan interface
   shell: ifup {{external_vlan_device}}
   when: deploy_external_private_vlan
-
-- name: Wait for Machine Ready
-  local_action:
-    module: wait_for
-    host: "{{inventory_hostname}}"
-    port: 22
-    delay: 15
-    timeout: 480
