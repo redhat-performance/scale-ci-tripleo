@@ -6,9 +6,8 @@ PASS="{{ticket_number}}"
 FOREMAN_URL="{{foreman_url}}" 
 NAME="{{undercloud_hostname}}"
 
-curl -s -H "Accept:application/json" \
-     -k -u $USER:$PASS \
-     -d "host[name]=$NAME" \
-     -d "host[build]=1" \
-     $FOREMAN_URL/hosts
-
+curl -H 'Content-Type: application/json' \
+     -k -X PUT \
+     -u $USER:$PASS \
+     -d '{"host": {"build": "1"}}' \
+     $FOREMAN_URL/api/hosts/$NAME
