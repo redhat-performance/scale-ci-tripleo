@@ -110,3 +110,11 @@
 - name: Turn on Private external vlan interface
   shell: ifup {{external_vlan_device}}
   when: deploy_external_private_vlan
+
+- name: Wait for Machine Ready
+  local_action:
+    module: wait_for
+    host: "{{inventory_hostname}}"
+    port: 22
+    delay: 15
+    timeout: 480
