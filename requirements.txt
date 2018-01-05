@@ -1,4 +1,4 @@
-git+https://github.com/openstack/browbeat
-git+https://github.com/openstack/tripleo-quickstart
-git+https://github.com/openstack/tripleo-quickstart-extras
-git+https://github.com/mbruzek/tripleo-quickstart-scalelab
+git+https://github.com/openstack/browbeat.git/#egg=browbeat
+git+https://github.com/openstack/tripleo-quickstart.git/#egg=tripleo-quickstart
+git+https://github.com/openstack/tripleo-quickstart-extras.git/#egg=tripleo-quickstart-extras
+git+https://github.com/mbruzek/tripleo-quickstart-scalelab.git/#egg=tripleo-quickstart-scalelab
