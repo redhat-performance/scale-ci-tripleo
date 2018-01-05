@@ -1,0 +1,3 @@
+git+https://github.com/openstack/browbeat.git
+git+https://github.com/openstack/tripleo-quickstart.git
+git+https://github.com/openstack/tripleo-quickstart-extras.git
