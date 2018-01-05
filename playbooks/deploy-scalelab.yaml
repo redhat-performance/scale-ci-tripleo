@@ -26,4 +26,4 @@
 
 #- import_playbook: scalelab-pci-passthrough.yaml
 
-- import_playbook: overcloud-metrics.yml
+- include: overcloud-metrics.yml
