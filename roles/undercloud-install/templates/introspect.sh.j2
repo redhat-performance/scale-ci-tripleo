@@ -61,6 +61,45 @@ introspect()
     done
 }
 
+
+# Corrects hardware cleaning failures
+fix_clean()
+{
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")| .["uuid"]'`; do
+        ironic node-set-provision-state $node manage
+        sleep 30s
+        ironic node-set-provision-state $node provide
+        sleep 30s
+    done
+
+    set +e
+    timeout $1 bash -c -- 'source $HOME/stackrc; \
+                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            while [ $on_count -gt 0 ]; do \
+                                sleep 30s; \
+                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            done'
+    set -e
+
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")| .["uuid"]'`; do
+        ironic node-set-provision-state $node manage
+        sleep 30s
+        ironic node-set-provision-state $node provide
+        sleep 30s
+    done
+
+    set +e
+    timeout $1 bash -c -- 'source $HOME/stackrc; \
+                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            while [ $on_count -gt 0 ]; do \
+                                sleep 30s; \
+                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            done'
+    set -e
+}
+
+
+
 ## * Introspect hardware attributes of nodes in a robust manner
 ##   retrying up to three times on any given node. This should
 ##   only be used in cases where deployment using bulk introspection
@@ -72,6 +111,7 @@ for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] =
 done
 
 introspect 15m
+fix_clean 15m
 introspect 30m
 introspect 60m
 
