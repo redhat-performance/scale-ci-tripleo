@@ -16,13 +16,13 @@
 
 - name: Replace controller type with our controller type
   lineinfile:
-    path: "/home/stack/templates/network-environment.yaml"
+    dest: "/home/stack/templates/network-environment.yaml"
     regexp: "^  OS::TripleO::Controller::Net::SoftwareConfig"
     state: absent
 
 - name: Replace controller type with our controller type
   lineinfile:
-    path: "/home/stack/templates/network-environment.yaml"
+    dest: "/home/stack/templates/network-environment.yaml"
     line: "  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{controller_type}}-controller.yaml"
     insertafter: "^resource_registry:"
     state: present
