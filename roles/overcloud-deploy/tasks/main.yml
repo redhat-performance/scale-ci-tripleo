@@ -5,7 +5,7 @@
   pip:
     state: latest
     virtualenv: "{{home_dir}}/ostag-venv"
-    name: git+https://github.com/jkilpatr/ostag
+    name: git+https://github.com/jkilpatr/ostag#egg=ostag
 
 - name: Template the Pinning script
   template:
@@ -19,6 +19,6 @@
   template:
     src: overcloud-deploy.sh.j2
     dest: "{{home_dir}}/overcloud-deploy.sh"
-    
+
 - name: Deploy the overcloud
   shell: "bash {{home_dir}}/overcloud-deploy.sh"
