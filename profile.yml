@@ -34,7 +34,7 @@ stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
 local_interface: enp94s0f1
 
 # option to enable/disable ironic node cleaning on overcloud nodes
-node_cleaning: true
+node_cleaning: false
 
 overcloud_ssl_endpoints: false
 external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
