@@ -63,7 +63,7 @@ openstack_deployment_hosts:
       pin: 1029pcompute # as mapped in roles data under HostnameFormatDefault will have -# appended to lock hosts to machines
       title: P1029Compute # The actual title we use to deploy the role, the name field in roles data
       hint: 1029p # The hint we look for in the management address string to determine what type of host we're looking at
-      count: 37 # number of hosts
+      count: 36 # number of hosts
   - host_type: #1029u's in the current template
       pin: cephstorage
       title: CephStorage
