@@ -5,11 +5,11 @@
   local_action:
     module: git
     repo: "{{templates_repo}}"
-    dest: "/tmp/templates/"
+    dest: "lookup('env','WORKSPACE')/templates/"
 
 - name: Copy over folder for this deployment
   copy:
-    src: "/tmp/templates/{{templates_repo_path}}"
+    src: "lookup('env','WORKSPACE')/templates/{{templates_repo_path}}"
     dest: "/home/stack/templates"
     owner: stack
     group: stack
