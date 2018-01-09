@@ -22,6 +22,7 @@
     - undercloud-install
     - overcloud-prepare-templates
     - overcloud-deploy
+    - scalelab-network
     - scalelab-inventory
 
 #- import_playbook: scalelab-pci-passthrough.yaml
