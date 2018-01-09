@@ -34,6 +34,8 @@ openstack baremetal introspection bulk start
 ## ::
 introspect()
 {
+    clean 15m
+
     for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]'`; do
         openstack baremetal introspection start $node
         sleep 30s
@@ -63,13 +65,13 @@ introspect()
 
 
 # Corrects hardware cleaning failures
-fix_clean()
+# Corrects hardware cleaning failures
+clean()
 {
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")| .["uuid"]'`; do
-        ironic node-set-provision-state $node manage
-        sleep 30s
-        ironic node-set-provision-state $node provide
-        sleep 30s
+
+    for node in `ironic --json node-list | jq -r '.[]| select(.["power_state"] == "power off")| select(.["provision_state"] == "manageable")|.["uuid"]'`; do
+        ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
+        sleep 30
     done
 
     set +e
@@ -80,6 +82,20 @@ fix_clean()
                                 on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
                             done'
     set -e
+
+    # Getting nodes out of clean-wait is a real pain. Check if a longer timeout is justified on your hardware
+    # but generally 15m is excessive.
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
+        ironic node-set-maintenance $node true
+        ironic node-set-provision-state $node abort
+        ironic node-set-maintenance $node false
+        ironic node-set-provision-state $node manage
+        sleep 10
+    done
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
+        ironic node-set-provision-state $node manage
+        sleep 10
+    done
 }
 
 
@@ -96,7 +112,7 @@ done
 
 introspect 15m
 introspect 15m
-fix_clean 15m
+introspect 15m
 
 {% endif %}
 
