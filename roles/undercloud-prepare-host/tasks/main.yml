@@ -110,3 +110,21 @@
 - name: Turn on Private external vlan interface
   shell: ifup {{external_vlan_device}}
   when: deploy_external_private_vlan
+
+- name: Setup traffic fowarding
+  shell: >-
+     echo 1 > /proc/sys/net/ipv4/ip_forward
+     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE
+     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
+     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT
+  when: deploy_external_private_vlan
+
+- name: Make sure iptables-services is installed
+  yum:
+    name: iptables-services
+    state: present
+  when: deploy_external_private_vlan
+
+- name: Save iptables
+  shell: service iptables save
+  when: deploy_external_private_vlan

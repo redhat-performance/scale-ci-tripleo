@@ -40,6 +40,7 @@ overcloud_ssl_endpoints: false
 external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
 
 # External private vlan on undercloud:
+public_net_device: eno1
 deploy_external_private_vlan: true
 external_vlan_device: enp94s0f1.10
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
