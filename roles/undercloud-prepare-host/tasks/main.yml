@@ -64,7 +64,7 @@
 - name: Setup authorized key upload
   authorized_key:
     user: stack
-    key: "{{ lookup('file', lookup('env','WORKSPACE') + '/id_rsa.pub') }}"
+    key: "{{ lookup('file', lookup('env','PUBLIC_KEY')) }}"
 
 - name: Setup tripleo directories
   file:
