@@ -77,10 +77,19 @@ ceph_host: 1029u
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
 ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
 
-pci_passthrough_playbook: true
 alias: nvme
 vendor_id: 144d
 product_id: a804
 passthrough_type: type-PCI
 passthrough_hostname: "{{ lookup('env', 'PASSTHROUGH_HOSTNAME') }}"
 ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
+
+# Metadata storage
+graphite_host: "{{ lookup('env', 'GRAPHITE') }}"
+# Graphite prefix / Cloud name used both with graphite and grafana dashboards
+graphite_prefix: "{{ lookup('env', 'CLOUD_NAME') }}"
+rsyslog_elasticsearch_server: "{{es_ip}}"
+rsyslog_aggregator_server: "{{es_ip}}"
+rsyslog_cloud_name: "{{graphite_prefix}}"
+es_ip: "{{ lookup('env', 'ES') }}
+
