@@ -174,7 +174,7 @@ inspection_iprange = 192.168.24.5,192.168.24.50
 # bare metal nodes you expect to deploy at once to work around
 # potential race condition when scheduling. (integer value)
 # Minimum value: 1
-#scheduler_max_attempts = 30
+scheduler_max_attempts = {{total_hosts}}
 
 # Whether to clean overcloud nodes (wipe the hard drive) between
 # deployments and after the introspection. (boolean value)

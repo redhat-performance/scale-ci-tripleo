@@ -38,7 +38,7 @@ introspect()
 
     for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]'`; do
         openstack baremetal introspection start $node
-        sleep 30s
+        sleep 10s
     done
 
     manageable_count=$(ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]' | wc -l)
@@ -65,13 +65,12 @@ introspect()
 
 
 # Corrects hardware cleaning failures
-# Corrects hardware cleaning failures
 clean()
 {
 
     for node in `ironic --json node-list | jq -r '.[]| select(.["power_state"] == "power off")| select(.["provision_state"] == "manageable")|.["uuid"]'`; do
         ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
-        sleep 30
+        sleep 10
     done
 
     set +e

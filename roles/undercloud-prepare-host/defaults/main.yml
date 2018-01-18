@@ -7,3 +7,4 @@ utilities:
   - vim
   - python-virtualenv
   - libguestfs-tools
+  - gcc

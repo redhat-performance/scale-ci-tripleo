@@ -59,6 +59,9 @@ ticket_number: "{{ lookup('env', 'TICKET_NUMBER') }}"
 foreman_url: "{{ lookup('env', 'FOREMAN_URL') }}"
 undercloud_hostname: "{{ lookup('env', 'UNDERCLOUD_HOSTNAME') }}"
 
+# Must be >= total number of hosts used for undercloud tuning
+total_hosts: 50
+
 openstack_deployment_hosts:
   - host_type:
       pin: 1029pcompute # as mapped in roles data under HostnameFormatDefault will have -# appended to lock hosts to machines
@@ -91,5 +94,5 @@ graphite_prefix: "{{ lookup('env', 'CLOUD_NAME') }}"
 rsyslog_elasticsearch_server: "{{es_ip}}"
 rsyslog_aggregator_server: "{{es_ip}}"
 rsyslog_cloud_name: "{{graphite_prefix}}"
-es_ip: "{{ lookup('env', 'ES') }}
+es_ip: "{{ lookup('env', 'ES') }}"
 

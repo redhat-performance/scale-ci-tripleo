@@ -5,7 +5,10 @@
   pip:
     state: latest
     virtualenv: "{{home_dir}}/ostag-venv"
-    name: git+https://github.com/jkilpatr/ostag#egg=ostag
+    name: "{{item}}"
+  with_items:
+    - pip
+    - git+https://github.com/jkilpatr/ostag#egg=ostag
 
 - name: Template the Pinning script
   template:

@@ -112,11 +112,11 @@
   when: deploy_external_private_vlan
 
 - name: Setup traffic fowarding
-  shell: >-
-     echo 1 > /proc/sys/net/ipv4/ip_forward
-     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE
-     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
-     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT
+  shell: "\n
+     echo 1 > /proc/sys/net/ipv4/ip_forward \n
+     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE \n
+     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT \n
+     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT"
   when: deploy_external_private_vlan
 
 - name: Make sure iptables-services is installed
