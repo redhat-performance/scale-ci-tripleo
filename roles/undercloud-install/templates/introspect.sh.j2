@@ -97,6 +97,16 @@ clean()
         sleep 10
         ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
     done
+    # make sure nodes go from clean -> clean_wait
+    sleep 60
+    set +e
+    timeout $1 bash -c -- 'source $HOME/stackrc; \
+                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            while [ $on_count -gt 0 ]; do \
+                                sleep 30s; \
+                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            done'
+    set -e
 }
 
 
