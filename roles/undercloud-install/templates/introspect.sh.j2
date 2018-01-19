@@ -84,15 +84,15 @@ clean()
 
     # Getting nodes out of clean-wait is a real pain. Check if a longer timeout is justified on your hardware
     # but generally 15m is excessive.
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
-        ironic node-set-maintenance $node true
-        ironic node-set-provision-state $node abort
-        ironic node-set-maintenance $node false
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
         ironic node-set-provision-state $node manage
         sleep 10
         ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
     done
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
+        ironic node-set-maintenance $node true
+        ironic node-set-provision-state $node abort
+        ironic node-set-maintenance $node false
         ironic node-set-provision-state $node manage
         sleep 10
         ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
@@ -107,6 +107,18 @@ clean()
                                 on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
                             done'
     set -e
+
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
+        ironic node-set-provision-state $node manage
+        sleep 10
+    done
+    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
+        ironic node-set-maintenance $node true
+        ironic node-set-provision-state $node abort
+        ironic node-set-maintenance $node false
+        ironic node-set-provision-state $node manage
+        sleep 10
+    done
 }
 
 
