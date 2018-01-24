@@ -2,8 +2,8 @@
 # Create a basic network environment for the tenant with the DNS set.
 
 - name: Create public network
-  shell: "source {{ansible_env.HOME}}/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment 10 public"
+  shell: "source /home/stack/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment 10 public"
 
 # Create a subnet with start, end, gateway and range from variables.
 - name: Create public subnet
-  shell: "source {{ansible_env.HOME}}/overcloudrc; openstack subnet create --allocation-pool start={{subnet_pool_start}},end={{subnet_pool_end}} --gateway={{subnet_gateway}} --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range {{subnet_range}} public_subnet"
+  shell: "source /home/stack/overcloudrc; openstack subnet create --allocation-pool start={{subnet_pool_start}},end={{subnet_pool_end}} --gateway={{subnet_gateway}} --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range {{subnet_range}} public_subnet"
