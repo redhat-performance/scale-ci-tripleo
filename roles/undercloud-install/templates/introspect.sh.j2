@@ -109,6 +109,7 @@ clean()
     set -e
 
     for node in `openstack baremetal node list -f json | jq -r '.[]| select(.[\"Provisioning State\"] == \"clean failed\")| .[\"UUID\"]'`; do
+        openstack baremetal node maintenance unset $node
         openstack baremetal node manage $node
         sleep 10
     done
