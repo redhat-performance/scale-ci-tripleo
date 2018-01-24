@@ -44,9 +44,15 @@ public_net_device: eno1
 deploy_external_private_vlan: true
 external_vlan_device: enp94s0f1.10
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
-private_external_netmask: 255.255.255.0
+private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
 # Tripleo maps external network port to noop.yml, keep the default behavior
 allow_external_on_compute: false
+
+# Public subnet settings:
+subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('172.21.0.3', true) }}"
+subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('172.21.255.254', true) }}"
+subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('172.21.0.1', true) }}"
+subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('172.21.0.0/16', true) }}"
 
 # neutron dns:
 dns_server: "{{ lookup('env', 'DNS_SERVER') }}"
@@ -78,6 +84,7 @@ controller_type: 1029p
 num_controllers: 3
 ceph_host: 1029u
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
+templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-ci/', true) }}"
 ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
 
 alias: nvme
@@ -95,4 +102,3 @@ rsyslog_elasticsearch_server: "{{es_ip}}"
 rsyslog_aggregator_server: "{{es_ip}}"
 rsyslog_cloud_name: "{{graphite_prefix}}"
 es_ip: "{{ lookup('env', 'ES') }}"
-
