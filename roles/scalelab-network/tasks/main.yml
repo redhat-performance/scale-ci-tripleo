@@ -3,7 +3,7 @@
 
 
 - name: Create public network
-  shell: "source {{ansible_env.HOME}}/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment 10 public"
+  shell: "source /home/stack/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment 10 public"
 
 - name: Create public subnet
-  shell: "source {{ansible_env.HOME}}/overcloudrc; openstack subnet create --allocation-pool start=172.21.0.110,end=172.21.0.200 --gateway=172.21.0.1 --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range 172.21.0.0/24 public_subnet"
+  shell: "source /home/stack/overcloudrc; openstack subnet create --allocation-pool start=172.21.0.110,end=172.21.0.200 --gateway=172.21.0.1 --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range 172.21.0.0/24 public_subnet"
