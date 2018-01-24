@@ -36,30 +36,30 @@ introspect()
 {
     clean 15m
 
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]'`; do
+    for node in `openstack baremetal node list -f json | jq -r '.[]|select(.["Provisioning State"] == "manageable")| .["UUID"]'`; do
         openstack baremetal introspection start $node
         sleep 10s
     done
 
-    manageable_count=$(ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]' | wc -l)
-    on_count=$(ironic --json node-list|jq -r '.[]| select(.["power_state"] == "power on")| .["uuid"]' | wc -l)
+    manageable_count=$(openstack baremetal node list -f json | jq -r '.[]|select(.["Provisioning State"] == "manageable")| .["UUID"]' | wc -l)
+    on_count=$(openstack baremetal node list -f json|jq -r '.[]| select(.["Power State"] == "power on")| .["UUID"]' | wc -l)
     while [ $on_count -eq 0 ] && [ $manageable_count -gt 0 ]; do
-        manageable_count=$(ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "manageable")| .["uuid"]' | wc -l)
-        on_count=$(ironic --json node-list|jq -r '.[]| select(.[\"power_state\"] == \"power on\")| .[\"uuid\"]' | wc -l)
+        manageable_count=$(openstack baremetal node list -f json | jq -r '.[]|select(.["Provisioning State"] == "manageable")| .["UUID"]' )
+        on_count=$(openstack baremetal node list -f json|jq -r '.[]|select(.[\"Power State\"] == \"power on\")| .[\"UUID\"]' | wc -l)
         sleep 30
     done
 
     set +e
     timeout $1 bash -c -- 'source $HOME/stackrc; \
-                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"power_state\"] == \"power on\")| .[\"uuid\"]" | wc -l) ; \
+                            on_count=$(openstack baremetal node list -f json |jq -r ".[]| select(.[\"Power State\"] == \"power on\")| .[\"UUID\"]" | wc -l) ; \
                             while [ $on_count -gt 0 ]; do \
                                 sleep 30s; \
-                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"power_state\"] == \"power on\")| .[\"uuid\"]" | wc -l) ; \
+                                on_count=$(openstack baremetal node list -f json |jq -r ".[]| select(.[\"Power State\"] == \"power on\")| .[\"UUID\"]" | wc -l) ; \
                             done'
     set -e
 
-    for node in `ironic --json node-list | jq -r '.[]| select(.["power_state"] == "power off")| select(.["provision_state"] == "manageable")|.["uuid"]'`; do
-        ironic node-set-provision-state $node provide
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.["Power State"] == "power off")| select(.["Provisioning State"] == "manageable")|.["UUID"]'`; do
+        openstack baremetal node provide $node
     done
 }
 
@@ -68,55 +68,55 @@ introspect()
 clean()
 {
 
-    for node in `ironic --json node-list | jq -r '.[]| select(.["power_state"] == "power off")| select(.["provision_state"] == "manageable")|.["uuid"]'`; do
-        ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.["Power State"] == "power off")| select(.["Provisioning State"] == "manageable")|.["UUID"]'`; do
+        openstack baremetal node clean $node --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
         sleep 10
     done
 
     set +e
     timeout $1 bash -c -- 'source $HOME/stackrc; \
-                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            on_count=$(openstack baremetal node list -f json | jq -r ".[]| select(.[\"Provisioning State\"] == \"clean wait\")| .[\"UUID\"]" | wc -l) ; \
                             while [ $on_count -gt 0 ]; do \
                                 sleep 30s; \
-                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                                on_count=$(openstack baremetal node list -f json | jq -r ".[]| select(.[\"Provisioning State\"] == \"clean wait\")| .[\"UUID\"]" | wc -l) ; \
                             done'
     set -e
-
     # Getting nodes out of clean-wait is a real pain. Check if a longer timeout is justified on your hardware
     # but generally 15m is excessive.
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
-        ironic node-set-provision-state $node manage
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.["Provision State"] == "clean failed")|.["UUID"]'`; do
+        openstack baremetal node maintenance unset $node
+        openstack baremetal node manage $node
         sleep 10
-        ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
+        openstack baremetal node clean $node --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
     done
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
-        ironic node-set-maintenance $node true
-        ironic node-set-provision-state $node abort
-        ironic node-set-maintenance $node false
-        ironic node-set-provision-state $node manage
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.["Provision State"] == "clean failed")|.["UUID"]'`; do
+        openstack baremetal node maintenance set $node
+        openstack baremetal node abort $node
+        openstack baremetal node maintenance unset $node
+        openstack baremetal node manage $node
         sleep 10
-        ironic node-set-provision-state $node clean --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
+        openstack baremetal node clean $node --clean-steps '[{"interface": "deploy", "step": "erase_devices_metadata"}]'
     done
     # make sure nodes go from clean -> clean_wait
     sleep 60
     set +e
     timeout $1 bash -c -- 'source $HOME/stackrc; \
-                            on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                            on_count=$(openstack baremetal node list -f json | jq -r ".[]| select(.[\"Provisioning State\"] == \"clean wait\")| .[\"UUID\"]" | wc -l) ; \
                             while [ $on_count -gt 0 ]; do \
                                 sleep 30s; \
-                                on_count=$(ironic --json node-list|jq -r ".[]| select(.[\"provision_state\"] == \"clean wait\")| .[\"uuid\"]" | wc -l) ; \
+                                on_count=$(openstack baremetal node list -f json | jq -r ".[]| select(.[\"Provisioning State\"] == \"clean wait\")| .[\"UUID\"]" | wc -l) ; \
                             done'
     set -e
 
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean failed")|.["uuid"]'`; do
-        ironic node-set-provision-state $node manage
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.[\"Provisioning State\"] == \"clean failed\")| .[\"UUID\"]'`; do
+        openstack baremetal node manage $node
         sleep 10
     done
-    for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "clean wait")|.["uuid"]'`; do
-        ironic node-set-maintenance $node true
-        ironic node-set-provision-state $node abort
-        ironic node-set-maintenance $node false
-        ironic node-set-provision-state $node manage
+    for node in `openstack baremetal node list -f json | jq -r '.[]| select(.[\"Provisioning State\"] == \"clean wait\")| .[\"UUID\"]'`; do
+        openstack baremetal node maintenance set $node
+        openstack baremetal node abort $node
+        openstack baremetal node maintenance unset $node
+        openstack baremetal node manage $node
         sleep 10
     done
 }
@@ -129,8 +129,8 @@ clean()
 ##   has reliability issues.
 ## ::
 
-for node in `ironic --json node-list | jq -r '.[]| select(.["provision_state"] == "available")| .["uuid"]'`; do
-  ironic node-set-provision-state $node manage
+for node in `openstack baremetal node list -f json | jq -r '.[]| select(.[\"Provisioning State\"] == \"available\")| .[\"UUID\"]'`; do
+    openstack baremetal node manage $node
 done
 
 introspect 15m
