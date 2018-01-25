@@ -28,10 +28,23 @@
 
 - name: fetch the undercloud ssh key
   fetch:
-    src: '{{ working_dir }}/.ssh/id_rsa'
+    src: '/home/stack/.ssh/id_rsa'
     dest: '{{ overcloud_key }}'
     flat: yes
     mode: 0400
+
+#required for regeneration of ssh.config.ansible
+- name: set_fact for undercloud ip
+  set_fact:
+    undercloud_ip: "{{ ansible_default_ipv4.address }} "
+
+#required for regeneration of ssh.config.ansible
+- name: set undercloud ssh proxy command
+  set_fact:
+    undercloud_ssh_proxy_command: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      -o ConnectTimeout=60 -i {{ overcloud_key }}
+      {{ ssh_user }}@{{ hostvars['localhost'].ansible_default_ipv4.address }}
+      -W {{ undercloud_ip }}:22"
 
 # add host to the ansible group formed from its type
 # novacompute nodes are added as compute for backwards compatibility
@@ -44,39 +57,32 @@
     ansible_fqdn: '{{ item.value }}'
     ansible_user: "{{ overcloud_user | default('heat-admin') }}"
     ansible_private_key_file: "{{ overcloud_key }}"
-    ansible_ssh_common_args: '-F "{{ local_working_dir }}/ssh.config.ansible"'
-
-#required for regeneration of ssh.config.ansible
-- name: set_fact for undercloud ip
-  set_fact:
-    undercloud_ip: "{{ ansible_default_ipv4.address }} "
-    cacheable: true
-
-#required for regeneration of ssh.config.ansible
-- name: set undercloud ssh proxy command
-  set_fact:
-    undercloud_ssh_proxy_command: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
-      -o ConnectTimeout=60 -i {{ local_working_dir }}/id_rsa_virt_power
-      {{ ssh_user }}@{{ hostvars['localhost'].ansible_default_ipv4.address }}
-      -W {{ undercloud_ip }}:22"
-    cacheable: true
+    ansible_ssh_common_args: ' -F {{local_working_dir}}/ssh.config.ansible'
 
 - name: create inventory from template
-  delegate_to: localhost
   template:
     src: 'inventory.j2'
-    dest: '{{ local_working_dir }}/hosts'
+    dest: '{{working_dir}}/hosts'
 
 - name: regenerate ssh config
-  delegate_to: localhost
   template:
     src: 'ssh_config.j2'
-    dest: '{{ local_working_dir }}/ssh.config.ansible'
+    dest: '{{working_dir}}/ssh.config.ansible'
     mode: 0644
+
+- name: Fetch hosts
+  fetch:
+    flat: yes
+    src: "{{working_dir}}/hosts"
+    dest: "{{local_working_dir}}/hosts"
+
+- name: Fetch ssh config
+  fetch:
+    flat: yes
+    src: "{{working_dir}}/ssh.config.ansible"
+    dest: "{{local_working_dir}}/ssh.config.ansible"
 
 # just setup the ssh.config.ansible and hosts file for the undercloud
 - name: check for existence of identity key
   delegate_to: localhost
-  stat: path="{{ local_working_dir }}/id_rsa_virt_power"
-  when: undercloud_ip is not defined
-  register: result_stat_id_rsa_virt_power
+  stat: path="{{overcloud_key}}"
