@@ -8,3 +8,4 @@ utilities:
   - python-virtualenv
   - libguestfs-tools
   - gcc
+  - libselinux-python
