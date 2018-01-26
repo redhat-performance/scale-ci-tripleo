@@ -8,7 +8,7 @@
     name: "{{item}}"
   with_items:
     - pip
-    - git+https://github.com/jkilpatr/ostag#egg=ostag
+    - git+https://github.com/redhat-performance/ostag#egg=ostag
 
 - name: Template the Pinning script
   template:
