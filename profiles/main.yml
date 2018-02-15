@@ -53,6 +53,9 @@ private_external_netmask: 255.255.255.0
 # Tripleo maps external network port to noop.yml, lets keep the default behavior
 allow_external_on_compute: false
 
+# Get the time server from the NTP_SERVER environment variable.
+ntp_server: "{{ lookup('env', 'NTP_SERVER')|default('0.pool.ntp.org', true) }}"
+
 # neutron dns:
 dns_server: 8.8.8.8
 
