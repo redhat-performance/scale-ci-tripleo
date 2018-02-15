@@ -15,5 +15,6 @@ time openstack overcloud deploy --templates \
 -e /home/stack/templates/environments/compute-params.yaml \
 -e /home/stack/templates/environments/controller-params.yaml \
 -e /home/stack/templates/environments/firstboot-env.yaml \
+-e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
 -e deploy.yml &> /home/stack/overcloud-deploy.log
 date
