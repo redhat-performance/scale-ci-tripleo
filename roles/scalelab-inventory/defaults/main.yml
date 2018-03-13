@@ -1,5 +1,5 @@
 ---
-local_working_dir: /tmp/
+local_working_dir: "{{lookup('env','WORKSPACE')}}"
 working_dir: /home/stack
 ssh_user: stack
 undercloud_user: stack

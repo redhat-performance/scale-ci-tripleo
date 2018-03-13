@@ -92,6 +92,8 @@ vendor_id: 144d
 product_id: a804
 passthrough_type: type-PCI
 passthrough_hostname: "{{ lookup('env', 'PASSTHROUGH_HOSTNAME') }}"
+
+# Get the time server from the NTP_SERVER environment variable.
 ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
 
 # Metadata storage
