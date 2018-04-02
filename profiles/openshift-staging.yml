@@ -1,0 +1,107 @@
+---
+# All variables needed to deploy the tripleo-quickstart-scalelab project.
+
+rhos_release_rpm: "{{ lookup('env', 'RHOS_RELEASE_URL') }}"
+
+# OSP/OSPd versioning and build
+version: 11
+rhel_version: 7.4
+rhos_release: 11-director
+build: z4
+
+deploy_additional_repos: false
+
+repos:
+  rhel-7-server-beta:
+    baseurl: "{{ lookup('env', 'RHEL_7_SERVER_BETA_BASE_URL') }}"
+
+# Scale lab boot order still broke?
+scale_lab_broke: false
+
+# bulk introspection
+introspection: false
+
+# better introspection, be sure to turn bulk off if you use this
+introspect_with_retry: true
+
+# Dump version file to this directory
+version_directory: /etc
+
+# Stack user password. Encrypted with sha512
+stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
+
+# undercloud control plane interface:
+local_interface: enp94s0f1
+
+# option to enable/disable ironic node cleaning on overcloud nodes
+node_cleaning: false
+
+overcloud_ssl_endpoints: false
+external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
+
+# External private vlan on undercloud:
+public_net_device: eno1
+deploy_external_private_vlan: true
+external_vlan_device: enp94s0f1.10
+private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
+private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
+# Tripleo maps external network port to noop.yml, keep the default behavior
+allow_external_on_compute: false
+
+# Public subnet settings:
+subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('172.21.0.100', true) }}"
+subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('172.21.255.254', true) }}"
+subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('172.21.0.1', true) }}"
+subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('172.21.0.0/16', true) }}"
+
+# neutron dns:
+dns_server: "{{ lookup('env', 'DNS_SERVER') }}"
+
+# instackenv:
+instackenv_json: "{{ lookup('env', 'INSTACKENV_JSON') }}"
+
+cloud_title: "{{ lookup('env', 'CLOUD_TITLE') }}"
+ticket_number: "{{ lookup('env', 'TICKET_NUMBER') }}"
+foreman_url: "{{ lookup('env', 'FOREMAN_URL') }}"
+undercloud_hostname: "{{ lookup('env', 'UNDERCLOUD_HOSTNAME') }}"
+
+# Must be >= total number of hosts used for undercloud tuning
+total_hosts: 12
+
+openstack_deployment_hosts:
+  - host_type:
+      pin: 1029pcompute # as mapped in roles data under HostnameFormatDefault will have -# appended to lock hosts to machines
+      title: P1029Compute # The actual title we use to deploy the role, the name field in roles data
+      hint: "1029p" # The hint we look for in the management address string to determine what type of host we're looking at
+      count: 8 # number of 1029p hosts = 12 - 1 undercloud - 3 controllers
+  - host_type: #1029u's in the current template
+      pin: cephstorage
+      title: CephStorage
+      hint: "1029p"
+      count: 0
+
+controller_type: 1029p
+num_controllers: 3
+
+ceph_host: 1029p
+templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
+templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-ci/', true) }}"
+ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
+
+alias: nvme
+vendor_id: 144d
+product_id: a804
+passthrough_type: type-PCI
+passthrough_hostname: "{{ lookup('env', 'PASSTHROUGH_HOSTNAME') }}"
+
+# Get the time server from the NTP_SERVER environment variable.
+ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
+
+# Metadata storage
+graphite_host: "{{ lookup('env', 'GRAPHITE') }}"
+# Graphite prefix / Cloud name used both with graphite and grafana dashboards
+graphite_prefix: "{{ lookup('env', 'CLOUD_NAME') }}"
+rsyslog_elasticsearch_server: "{{es_ip}}"
+rsyslog_aggregator_server: "{{es_ip}}"
+rsyslog_cloud_name: "{{graphite_prefix}}"
+es_ip: "{{ lookup('env', 'ES') }}"
