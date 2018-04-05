@@ -42,9 +42,11 @@ external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
 # External private vlan on undercloud:
 public_net_device: eno1
 deploy_external_private_vlan: true
+
 external_vlan_device: enp94s0f3.620
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
 private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.255.192', true) }}"
+
 # Tripleo maps external network port to noop.yml, keep the default behavior
 allow_external_on_compute: false
 
