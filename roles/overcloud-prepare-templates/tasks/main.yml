@@ -4,12 +4,12 @@
 - name: Clone the templates repo
   local_action:
     module: git
-    repo: "{{templates_repo}}"
-    dest: "lookup('env','WORKSPACE')/templates/"
+    repo: "{{ templates_repo }}"
+    dest: "{{ playbook_dir }}/templates/"
 
 - name: Copy over folder for this deployment
   copy:
-    src: "lookup('env','WORKSPACE')/templates/{{templates_repo_path}}"
+    src: "{{ playbook_dir }}/templates/{{ templates_repo_path }}"
     dest: "/home/stack/templates"
     owner: stack
     group: stack
