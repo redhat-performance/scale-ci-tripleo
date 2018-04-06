@@ -53,7 +53,7 @@ allow_external_on_compute: false
 # Public subnet settings:
 subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.200', true) }}"
 subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('10.12.95.251', true) }}"
-subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('10.12.95.193', true) }}"
+subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('10.12.95.254', true) }}"
 subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('10.12.95.192/26', true) }}"
 
 # neutron dns:
@@ -87,7 +87,7 @@ num_controllers: 3
 
 ceph_host: 1029p
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
-templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-ci/', true) }}"
+templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-staging/', true) }}"
 ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
 
 alias: nvme
