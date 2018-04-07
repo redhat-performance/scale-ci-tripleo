@@ -54,7 +54,7 @@ private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default(
 allow_external_on_compute: false
 
 # Public subnet settings:
-subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.200', true) }}"
+subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.203', true) }}"
 subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('10.12.95.251', true) }}"
 subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('10.12.95.254', true) }}"
 subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('10.12.95.192/26', true) }}"
