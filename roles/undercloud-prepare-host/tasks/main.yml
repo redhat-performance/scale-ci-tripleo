@@ -105,11 +105,11 @@
     dest: "/etc/sysconfig/network-scripts/ifcfg-{{external_vlan_device}}"
     owner: root
     group: root
-  when: deploy_external_private_vlan
+  when: deploy_external_private_vlan | bool
 
 - name: Turn on Private external vlan interface
   shell: ifup {{external_vlan_device}}
-  when: deploy_external_private_vlan
+  when: deploy_external_private_vlan | bool
 
 - name: Setup traffic fowarding
   shell: "\n
@@ -117,14 +117,14 @@
      iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE \n
      iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT \n
      iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT"
-  when: deploy_external_private_vlan and deploy_external_private_nat
+  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
 
 - name: Make sure iptables-services is installed
   yum:
     name: iptables-services
     state: present
-  when: deploy_external_private_vlan and deploy_external_private_nat
+  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
 
 - name: Save iptables
   shell: service iptables save
-  when: deploy_external_private_vlan and deploy_external_private_nat
+  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
