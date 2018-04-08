@@ -42,9 +42,9 @@ external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
 # External private vlan on undercloud:
 public_net_device: eno1
 # Deploy a vlan device for the external private network.
-deploy_external_private_vlan: true
+deploy_external_private_vlan: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_LAN')|default(true, true) }}"
 # Do not use Network Address Translation (NAT) to route the traffic to this device.
-deploy_external_private_nat: false
+deploy_external_private_nat: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_NAT')|default(false, true) }}"
 # The external vlan device name.
 external_vlan_device: enp94s0f3.620
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
