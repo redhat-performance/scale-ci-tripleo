@@ -70,9 +70,9 @@ ticket_number: "{{ lookup('env', 'TICKET_NUMBER') }}"
 foreman_url: "{{ lookup('env', 'FOREMAN_URL') }}"
 undercloud_hostname: "{{ lookup('env', 'UNDERCLOUD_HOSTNAME') }}"
 
-# 12 total systems - 1 undercloud (RMA) - 1 undercloud - 3 OpenStack controllers
-num_compute: "{{ lookup('env', 'NUM_COMPUTE')|default(7, true) }}"
-num_storage: "{{ lookup('env', 'NUM_STORAGE')|default(0, true) }}"
+# 12 total systems - 1 undercloud (RMA) - 1 undercloud - 3 OpenStack controllers - 3 ceph
+num_compute: "{{ lookup('env', 'NUM_COMPUTE')|default(4, true) }}"
+num_storage: "{{ lookup('env', 'NUM_STORAGE')|default(3, true) }}"
 
 # Must be >= total number of hosts used for undercloud tuning
 total_hosts: "{{ num_compute | int + num_storage | int }}"
@@ -83,16 +83,16 @@ openstack_deployment_hosts:
       title: P1029Compute # The actual title we use to deploy the role, the name field in roles data
       hint: "1029p" # The hint we look for in the management address string to determine what type of host we're looking at
       count: "{{ num_compute }}"
-  - host_type: #1029u's in the current template
+  - host_type:
       pin: cephstorage
       title: CephStorage
       hint: "1029p"
-      count: "{{ num_storage }}" # The number of systems to use for storage. 
+      count: "{{ num_storage }}" # The number of systems to use for storage.
 
 controller_type: 1029p
 num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
 
-ceph_host: 1029p
+ceph_host: 1029p  # There are no 1029u systems for the cloud05 environment.
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
 templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-staging/', true) }}"
 ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
