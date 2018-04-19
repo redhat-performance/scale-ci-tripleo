@@ -45,8 +45,10 @@ public_net_device: eno1
 deploy_external_private_vlan: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_LAN')|default(true, true) }}"
 # Do not use Network Address Translation (NAT) to route the traffic to this device.
 deploy_external_private_nat: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_NAT')|default(true, true) }}"
+# The external vlan to use for creating the OpenStack public network.
+external_vlan: "{{ lookup('env', 'EXTERNAL_VLAN')|default('10', true) }}"
 # The external vlan device name.
-external_vlan_device: enp94s0f1.10
+external_vlan_device: "enp94s0f1.{{ external_vlan }}"
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
 private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
 # Tripleo maps external network port to noop.yml, keep the default behavior
