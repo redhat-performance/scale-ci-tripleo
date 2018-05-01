@@ -4,6 +4,31 @@
 - name: Install undercloud
   shell: openstack undercloud install
 
+# (akrzos) Workaround for OSP11 Ocata where Keystone is deployed as a
+# singular process hosted in httpd.
+- name: OSP11/Ocata - Tune Keystone processes to 24
+  become: true
+  lineinfile:
+    path: "{{item}}"
+    state: present
+    regexp: '^([\t\s]*WSGIDaemonProcess.*)processes=[0-9]+ threads=[0-9]+(.*)$'
+    line: '\1processes=24 threads=6\2'
+    backup: true
+    backrefs: true
+  with_items:
+    - /etc/httpd/conf.d/10-keystone_wsgi_admin.conf
+    - /etc/httpd/conf.d/10-keystone_wsgi_main.conf
+  when:
+    - version == 11
+
+- name: OSP11/Ocata - Restart httpd hosting Keystone
+  become: true
+  service:
+    name: httpd
+    state: restarted
+  when:
+    - version == 11
+
 - name: Install ipa and overcloud images
   become: true
   yum: name={{item}}
@@ -20,7 +45,7 @@
 - name: Add debugging root password to images
   shell: "cd /home/stack/images; virt-customize -a overcloud-full.qcow2 --root-password password:{{overcloud_image_password}}"
   environment:
-    LIBGUESTFS_BACKEND: direct 
+    LIBGUESTFS_BACKEND: direct
 
 - name: Upload images
   shell: . /home/stack/stackrc; openstack overcloud image upload --image-path /home/stack/images/
