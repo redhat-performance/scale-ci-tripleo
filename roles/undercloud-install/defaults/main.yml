@@ -1,3 +1,0 @@
----
-# defaults file for undercloud-install
-overcloud_image_password: debug

@@ -4,7 +4,7 @@
 - name: Install ostag
   pip:
     state: latest
-    virtualenv: "{{home_dir}}/ostag-venv"
+    virtualenv: /home/stack/ostag-venv
     name: "{{item}}"
   with_items:
     - pip
@@ -19,15 +19,15 @@
 - name: Template the Pinning script
   template:
     src: pin-nodes.sh.j2
-    dest: "{{home_dir}}/pin-nodes.sh"
+    dest: /home/stack/pin-nodes.sh
 
 - name: Pin the nodes
-  shell: "source {{stackrc}}; bash {{home_dir}}/pin-nodes.sh"
+  shell: source /home/stack/stackrc; bash /home/stack/pin-nodes.sh
 
 - name: Template deploy script
   template:
     src: overcloud-deploy.sh.j2
-    dest: "{{home_dir}}/overcloud-deploy.sh"
+    dest: /home/stack/overcloud-deploy.sh
 
 - name: Deploy the overcloud
-  shell: "bash {{home_dir}}/overcloud-deploy.sh"
+  shell: bash /home/stack/overcloud-deploy.sh
