@@ -28,7 +28,14 @@
 
 - name: Install utilities
   yum: name={{item}}
-  with_items: "{{utilities}}"
+  with_items:
+    - tmux
+    - screen
+    - vim
+    - python-virtualenv
+    - libguestfs-tools
+    - gcc
+    - libselinux-python
 
 - name: Update Packages
   yum: name=* state=latest

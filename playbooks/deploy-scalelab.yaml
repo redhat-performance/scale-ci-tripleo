@@ -1,9 +1,6 @@
 ---
 #
-# Playbook deploying and setting up your undercloud for overcloud deployment in scale lab
-# environment or the bagl environment.
-#
-# Tested against OSP 8/9/10 and single-nic-vlans config setup with private external network
+# Playbook for deploying Tripleo OpenStack for OpenShift in ScaleLab
 #
 
 - name: Run initial setup tasks
@@ -24,7 +21,3 @@
     - overcloud-deploy
     - scalelab-network
     - scalelab-inventory
-
-#- import_playbook: scalelab-pci-passthrough.yaml
-
-#- include: overcloud-metrics.yml
