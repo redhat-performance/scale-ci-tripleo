@@ -10,12 +10,18 @@
     - pip
     - git+https://github.com/redhat-performance/ostag#egg=ostag
 
+- name: Fix os-client-config version for ostag
+  pip:
+    name: os-client-config
+    version: 1.29.0
+    virtualenv: "{{home_dir}}/ostag-venv"
+
 - name: Template the Pinning script
   template:
     src: pin-nodes.sh.j2
     dest: "{{home_dir}}/pin-nodes.sh"
 
-- name: Pin the nodes 
+- name: Pin the nodes
   shell: "source {{stackrc}}; bash {{home_dir}}/pin-nodes.sh"
 
 - name: Template deploy script
