@@ -9,7 +9,7 @@
 - name: OSP11/Ocata - Tune Keystone processes to 24
   become: true
   lineinfile:
-    path: "{{item}}"
+    dest: "{{item}}"
     state: present
     regexp: '^([\t\s]*WSGIDaemonProcess.*)processes=[0-9]+ threads=[0-9]+(.*)$'
     line: '\1processes=24 threads=6\2'
