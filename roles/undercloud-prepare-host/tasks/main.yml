@@ -1,6 +1,16 @@
 ---
 # tasks file for undercloud-prep
 
+# Scale Lab Pre-deployment tooling lays down vlans to test network before hand
+# Lets remove this to avoid confusion when debugging and to prevent vlan conflicts
+- name: Clean Validation vlans
+  shell: |
+    for interface in $(ip -o link show | awk '{print $2}' | grep "@"  | awk '{split($0,interface,"@"); print interface[1]}')
+    do
+      ifdown ${interface}
+      rm /etc/sysconfig/network-scripts/ifcfg-${interface}
+    done
+
 - name: Disable epel
   shell: rpm -e epel-release
   ignore_errors: true
