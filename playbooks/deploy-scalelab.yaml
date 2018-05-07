@@ -20,4 +20,3 @@
     - overcloud-prepare-templates
     - overcloud-deploy
     - scalelab-network
-    - scalelab-inventory
