@@ -15,8 +15,7 @@ repos:
   rhel-7-server-beta:
     baseurl: "{{ lookup('env', 'RHEL_7_SERVER_BETA_BASE_URL') }}"
 
-# Scale lab boot order still broke?
-scale_lab_broke: false
+overcloud_image_password: debug
 
 # bulk introspection
 introspection: false
@@ -36,7 +35,6 @@ local_interface: enp94s0f1
 # option to enable/disable ironic node cleaning on overcloud nodes
 node_cleaning: false
 
-overcloud_ssl_endpoints: false
 external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
 
 # External private vlan on undercloud:
@@ -51,9 +49,6 @@ external_vlan: "{{ lookup('env', 'EXTERNAL_VLAN')|default('620', true) }}"
 external_vlan_device: "enp94s0f3.{{ external_vlan }}"
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
 private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.255.192', true) }}"
-
-# Tripleo maps external network port to noop.yml, keep the default behavior
-allow_external_on_compute: false
 
 # Public subnet settings:
 subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.203', true) }}"

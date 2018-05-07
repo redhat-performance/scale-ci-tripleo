@@ -9,7 +9,7 @@
 
 - name: Copy over folder for this deployment
   copy:
-    src: "{{ playbook_dir }}/templates/{{ templates_repo_path }}"
+    src: "{{ playbook_dir }}/templates/{{ templates_repo_path|default('scale-ci/', true) }}"
     dest: "/home/stack/templates"
     owner: stack
     group: stack
@@ -32,17 +32,7 @@
     src: deploy.yml.j2
     dest: "/home/stack/deploy.yml"
 
-# (WARNING) This is more than likely a hack to allow external network addresses on compute nodes
-- name: Fix /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
-  become: true
-  lineinfile:
-    dest: /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
-    line: "  OS::TripleO::Compute::Ports::ExternalPort: ../network/ports/external.yaml"
-    regexp: "  OS::TripleO::Compute::Ports::ExternalPort: ../network/ports/noop.yaml"
-    backup: true
-  when: allow_external_on_compute
-
-- name: Place version metadata json file in /home/stack
+- name: "Place version metadata json file in {{version_directory}}"
   become: true
   template:
     src: "templates/version.json.j2"

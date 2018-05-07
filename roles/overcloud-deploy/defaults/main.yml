@@ -1,6 +1,0 @@
----
-# defaults file for overcloud-deploy
-num_controllers: 3
-num_computes: 6
-home_dir: /home/stack/
-stackrc: /home/stack/stackrc
