@@ -87,7 +87,7 @@ openstack_deployment_hosts:
       count: "{{ num_storage }}" # The number of systems to use for storage.
 
 controller_type: 1029p
-num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
+num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(1, true) }}"
 
 ceph_host: 1029p  # There are no 1029u systems for the cloud07 environment.
 
