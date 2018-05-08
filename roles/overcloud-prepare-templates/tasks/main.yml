@@ -29,13 +29,13 @@
 
 - name: Template deploy.yml
   template:
-    src: deploy.yml.j2
-    dest: "/home/stack/deploy.yml"
+    src: deploy.yaml.j2
+    dest: /home/stack/templates/deploy.yaml
 
-- name: "Place version metadata json file in {{version_directory}}"
+- name: Place version metadata json file in /etc
   become: true
   template:
-    src: "templates/version.json.j2"
-    dest: "{{version_directory}}/version.json"
+    src: templates/version.json.j2
+    dest: /etc/version.json
     owner: stack
     group: stack
