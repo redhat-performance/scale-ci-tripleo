@@ -27,7 +27,46 @@
 - name: Template deploy script
   template:
     src: overcloud-deploy.sh.j2
-    dest: /home/stack/overcloud-deploy.sh
+    dest: /home/stack/alderaan-deploy/overcloud-deploy.sh
 
-- name: Deploy the overcloud
-  shell: bash /home/stack/overcloud-deploy.sh
+- name: Overcloud Deploy Block
+  block:
+    - name: Deploy the Overcloud
+      shell: |
+        . /home/stack/stackrc
+        /home/stack/alderaan-deploy/overcloud-deploy.sh {{log_dir}}
+  rescue:
+     # Collect additional items to sweep into alderaan-deploy/log for debugging in event of failure
+    - name: Collect OpenStack Ironic/Heat/Mistral/Nova log files
+      become: true
+      shell: |
+        mkdir -p {{log_dir}}/ironic
+        cp -r /var/log/ironic/* {{log_dir}}/ironic
+        mkdir -p {{log_dir}}/heat
+        cp -r /var/log/heat/* {{log_dir}}/heat
+        mkdir -p {{log_dir}}/mistral
+        cp -r /var/log/mistral/* {{log_dir}}/mistral
+        mkdir -p {{log_dir}}/nova
+        cp -r /var/log/nova/* {{log_dir}}/nova
+        mkdir -p {{log_dir}}/templates
+        cp -r /home/stack/templates/* {{log_dir}}/templates
+
+    - name: Dump OpenStack Data
+      shell: |
+        set -o pipefail
+        . /home/stack/stackrc
+        openstack baremetal node list 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-baremetal-node-list.log
+        openstack baremetal node list | grep None | awk '{print $2}' | xargs -I % openstack baremetal node show % 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-baremetal-node-show.log
+        openstack server list --all 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-server-node-list.log
+        openstack stack resource list overcloud 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-stack-resource-list.log
+        openstack stack failures list overcloud 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-stack-failures-list.log
+
+    - name: Ensure playbook stops under this condition
+      fail:
+        msg: Overcloud deploy failures.
+  always:
+    - name: Collect Overcloud Deploy Artifacts
+      synchronize:
+        src: "{{log_dir}}"
+        dest: "{{artifact_dir}}/alderaan-deploy_log"
+        mode: pull
