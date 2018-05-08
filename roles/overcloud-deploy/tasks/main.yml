@@ -14,7 +14,7 @@
   pip:
     name: os-client-config
     version: 1.29.0
-    virtualenv: "{{home_dir}}/ostag-venv"
+    virtualenv: /home/stack/ostag-venv
 
 - name: Template the Pinning script
   template:
