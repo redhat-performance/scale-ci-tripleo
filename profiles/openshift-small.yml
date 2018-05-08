@@ -42,19 +42,19 @@ public_net_device: eno1
 # Deploy a vlan device for the external private network.
 deploy_external_private_vlan: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_LAN')|default(true, true) }}"
 # Do not use Network Address Translation (NAT) to route the traffic to this device.
-deploy_external_private_nat: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_NAT')|default(false, true) }}"
+deploy_external_private_nat: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_NAT')|default(true, true) }}"
 # The external vlan to use for creating the OpenStack public network.
-external_vlan: "{{ lookup('env', 'EXTERNAL_VLAN')|default('620', true) }}"
+external_vlan: "{{ lookup('env', 'EXTERNAL_VLAN')|default('10', true) }}"
 # The external vlan device name.
-external_vlan_device: "enp94s0f3.{{ external_vlan }}"
+external_vlan_device: "enp94s0f1.{{ external_vlan }}"
 private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
-private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.255.192', true) }}"
+private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
 
 # Public subnet settings:
-subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.203', true) }}"
-subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('10.12.95.251', true) }}"
-subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('10.12.95.254', true) }}"
-subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('10.12.95.192/26', true) }}"
+subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('172.21.0.100', true) }}"
+subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('172.21.255.254', true) }}"
+subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('172.21.0.1', true) }}"
+subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('172.21.0.0/16', true) }}"
 
 # neutron dns:
 dns_server: "{{ lookup('env', 'DNS_SERVER') }}"
@@ -67,8 +67,8 @@ ticket_number: "{{ lookup('env', 'TICKET_NUMBER') }}"
 foreman_url: "{{ lookup('env', 'FOREMAN_URL') }}"
 undercloud_hostname: "{{ lookup('env', 'UNDERCLOUD_HOSTNAME') }}"
 
-# 12 total systems - 1 undercloud (RMA) - 1 undercloud - 3 OpenStack controllers - 3 ceph
-num_compute: "{{ lookup('env', 'NUM_COMPUTE')|default(4, true) }}"
+# 16 total systems - 1 undercloud - 3 storage (ceph) - 1 OpenStack controller - 1 broken system
+num_compute: "{{ lookup('env', 'NUM_COMPUTE')|default(10, true) }}"
 num_storage: "{{ lookup('env', 'NUM_STORAGE')|default(3, true) }}"
 
 # Must be >= total number of hosts used for undercloud tuning
@@ -89,10 +89,9 @@ openstack_deployment_hosts:
 controller_type: 1029p
 num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
 
-ceph_host: 1029p  # There are no 1029u systems for the cloud05 environment.
-local_templates: true
+ceph_host: 1029p  # There are no 1029u systems for the cloud07 environment.
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
-templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-staging/', true) }}"
+templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-small/', true) }}"
 ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
 
 alias: nvme
