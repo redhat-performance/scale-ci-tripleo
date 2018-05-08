@@ -6,6 +6,7 @@
     module: git
     repo: "{{ templates_repo }}"
     dest: "{{ playbook_dir }}/templates/"
+  when: not local_templates
 
 - name: Copy over folder for this deployment
   copy:
@@ -13,6 +14,49 @@
     dest: "/home/stack/templates"
     owner: stack
     group: stack
+  when: not local_templates
+
+- name: Copy Alderaan THT into templates directory
+  copy:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    owner: stack
+    group: stack
+    mode: "{{item.mode | default('0644')}}"
+  with_items:
+    - src: files/1029p-storage-environment.yaml
+      dest: /home/stack/templates/1029p-storage-environment.yaml
+    - src: files/1029u-storage-environment.yaml
+      dest: /home/stack/templates/1029u-storage-environment.yaml
+    - src: files/args.yaml
+      dest: /home/stack/templates/environments/args.yaml
+    - src: files/compute-params.yaml
+      dest: /home/stack/templates/environments/compute-params.yaml
+    - src: files/controller-params.yaml
+      dest: /home/stack/templates/environments/controller-params.yaml
+    - src: files/disable-notifications.yaml
+      dest: /home/stack/templates/disable-notifications.yaml
+    - src: files/firstboot-env.yaml
+      dest: /home/stack/templates/environments/firstboot-env.yaml
+    - src: files/first-boot.yaml
+      dest: /home/stack/templates/first-boot.yaml
+    - src: files/network-environment.yaml
+      dest: /home/stack/templates/network-environment.yaml
+    - src: files/roles_data-notelem.yaml
+      dest: /home/stack/templates/roles_data-notelem.yaml
+    - src: files/scheduler-hints.yaml
+      dest: /home/stack/templates/scheduler-hints.yaml
+
+    # Nic-config "templates"
+    - src: files/nic-configs/1029p-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/1029p-cephstorage.yaml
+    - src: files/nic-configs/1029p-compute.yaml
+      dest: /home/stack/templates/nic-configs/1029p-compute.yaml
+    - src: files/nic-configs/1029p-controller.yaml
+      dest: /home/stack/templates/nic-configs/1029p-controller.yaml
+    - src: files/nic-configs/1029u-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/1029u-cephstorage.yaml
+  when: local_templates
 
 - name: Replace controller type with our controller type
   lineinfile:
