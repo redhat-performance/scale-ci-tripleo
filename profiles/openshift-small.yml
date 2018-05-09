@@ -9,12 +9,6 @@ rhel_version: 7.4
 rhos_release: 11-director
 build: z4
 
-deploy_additional_repos: false
-
-repos:
-  rhel-7-server-beta:
-    baseurl: "{{ lookup('env', 'RHEL_7_SERVER_BETA_BASE_URL') }}"
-
 overcloud_image_password: debug
 
 # bulk introspection
