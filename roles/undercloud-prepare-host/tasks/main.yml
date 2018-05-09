@@ -18,12 +18,6 @@
 - name: Disable beaker repos
   shell: rm -rf /etc/yum.repos.d/beaker-*
 
-- name: Add custom repos
-  template:
-    src: "templates/undercloud-deploy.repo.j2"
-    dest: /etc/yum.repos.d/undercloud-deploy.repo
-  when: deploy_additional_repos
-
 - name: Get rhos-release
   get_url:
     url: "{{rhos_release_rpm}}"
@@ -56,14 +50,14 @@
   poll: 0
   ignore_errors: true
 
-# 8 minute timeout
+# 15 minute timeout
 - name: Wait for Machine Ready
   local_action:
     module: wait_for
     host: "{{inventory_hostname}}"
     port: 22
     delay: 15
-    timeout: 480
+    timeout: 900
 
 - name: Add stack user
   user: name=stack
@@ -76,7 +70,9 @@
     password: "{{ansible_ssh_pass}}"
 
 - name: Sudo for stack user
-  shell: echo "stack ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/stack; chmod 0440 /etc/sudoers.d/stack
+  shell: |
+    echo "stack ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/stack
+    chmod 0440 /etc/sudoers.d/stack
 
 - name: Setup authorized key upload
   authorized_key:
@@ -134,19 +130,10 @@
   when: deploy_external_private_vlan | bool
 
 - name: Setup traffic fowarding
-  shell: "\n
-     echo 1 > /proc/sys/net/ipv4/ip_forward \n
-     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE \n
-     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT \n
-     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT"
-  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
-
-- name: Make sure iptables-services is installed
-  yum:
-    name: iptables-services
-    state: present
-  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
-
-- name: Save iptables
-  shell: service iptables save
+  shell: |
+     echo 1 > /proc/sys/net/ipv4/ip_forward
+     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE
+     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
+     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT
+     iptables-save > /etc/sysconfig/iptables
   when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
