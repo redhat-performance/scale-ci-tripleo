@@ -1,14 +1,17 @@
 ---
 # tasks file for rebuild-undercloud
 
-- name: Template rebuild script
-  template:
-    src: toggle-rebuild.sh.j2
-    dest: /tmp/toggle-rebuild.sh
-  become: true
-
-- name: Run rebuild script
-  shell: "bash /tmp/toggle-rebuild.sh"
+- name: Set Machine to rebuild
+  delegate_to: localhost
+  uri:
+    body: "{\"host\": {\"build\": \"1\"}}"
+    body_format: json
+    force_basic_auth: true
+    method: PUT
+    password: "{{ticket_number}}"
+    url: "{{foreman_url}}/api/hosts/{{undercloud_hostname}}"
+    user: "{{cloud_title}}"
+    validate_certs: false
 
 - name: Reboot undercloud
   shell: "sleep 5; reboot now"
@@ -16,7 +19,18 @@
   poll: 0
   ignore_errors: true
 
-- name: Wait for Machine Ready
+# Stop gap to prevent a machine that is slow to reboot from passing
+- name: Wait for Machine Rebuilding
+  local_action:
+    module: wait_for
+    host: "{{undercloud_hostname}}"
+    port: 22
+    delay: 2
+    timeout: 300
+    state: stopped
+  register: wait_for_data
+
+- name: Wait for Machine Rebuild to complete
   local_action:
     module: wait_for
     host: "{{inventory_hostname}}"
