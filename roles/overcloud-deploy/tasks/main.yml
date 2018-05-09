@@ -28,6 +28,7 @@
   template:
     src: overcloud-deploy.sh.j2
     dest: /home/stack/alderaan-deploy/overcloud-deploy.sh
+    mode: 0744
 
 - name: Overcloud Deploy Block
   block:
