@@ -33,6 +33,7 @@ local_ip = 192.168.0.1/16
 #undercloud_nameservers =
 
 # List of ntp servers to use. (list value)
+#undercloud_ntp_servers =
 undercloud_ntp_servers = {{ntp_server}}
 
 # DNS domain name to use when deploying the overcloud. The overcloud
@@ -190,9 +191,13 @@ local_interface = {{local_interface}}
 # (boolean value)
 #enable_novajoin = false
 
-# Whether to install the Octavia client in the Undercloud. (boolean
-# value)
-#enable_octavia = false
+# Whether to enable docker container images to be build on the
+# undercloud. (boolean value)
+#enable_container_images_build = true
+
+# Array of host/port combiniations of docker insecure registries.
+# (string value)
+#docker_insecure_registries =
 
 # One Time Password to register Undercloud node with an IPA server.
 # Required when enable_novajoin = True. (string value)
@@ -371,6 +376,7 @@ clean_nodes = {{node_cleaning}}
 # Network CIDR for the Neutron-managed subnet for Overcloud instances.
 # (string value)
 # Deprecated group/name - [DEFAULT]/network_cidr
+#cidr = 192.168.24.0/24
 cidr = 192.168.0.0/16
 
 # Start of DHCP allocation range for PXE and DHCP of Overcloud
@@ -396,6 +402,7 @@ inspection_iprange = 192.168.1.1,192.168.9.250
 # Network gateway for the Neutron-managed network for Overcloud
 # instances on this network. (string value)
 # Deprecated group/name - [DEFAULT]/network_gateway
+#gateway = 192.168.24.1
 gateway = 192.168.0.1
 
 # The network will be masqueraded for external access. (boolean value)

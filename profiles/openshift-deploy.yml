@@ -17,9 +17,6 @@ introspection: false
 # better introspection, be sure to turn bulk off if you use this
 introspect_with_retry: true
 
-# Dump version file to this directory
-version_directory: /etc
-
 # Stack user password. Encrypted with sha512
 stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
 
@@ -86,13 +83,6 @@ ceph_host: 1029u
 local_templates: false
 templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
 templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-ci/', true) }}"
-ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
-
-alias: nvme
-vendor_id: 144d
-product_id: a804
-passthrough_type: type-PCI
-passthrough_hostname: "{{ lookup('env', 'PASSTHROUGH_HOSTNAME') }}"
 
 # Get the time server from the NTP_SERVER environment variable.
 ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
@@ -101,7 +91,3 @@ ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
 graphite_host: "{{ lookup('env', 'GRAPHITE') }}"
 # Graphite prefix / Cloud name used both with graphite and grafana dashboards
 graphite_prefix: "{{ lookup('env', 'CLOUD_NAME') }}"
-rsyslog_elasticsearch_server: "{{es_ip}}"
-rsyslog_aggregator_server: "{{es_ip}}"
-rsyslog_cloud_name: "{{graphite_prefix}}"
-es_ip: "{{ lookup('env', 'ES') }}"
