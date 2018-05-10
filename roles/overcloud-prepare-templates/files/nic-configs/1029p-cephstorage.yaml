@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 
 description: >
   Software Config to drive os-net-config to configure VLANs for the
-  storage role.
+  ceph storage role.
 
 parameters:
   ControlPlaneIp:
@@ -33,29 +33,17 @@ parameters:
     default: ''
     description: IP address/subnet on the management network
     type: string
-  ExternalNetworkVlanID:
-    default: 10
-    description: Vlan ID for the internal_api network traffic.
-    type: number
-  InternalApiNetworkVlanID:
-    default: 20
-    description: Vlan ID for the internal_api network traffic.
-    type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
-  TenantNetworkVlanID:
-    default: 50
-    description: Vlan ID for the tenant network traffic.
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
     type: number
   ManagementNetworkVlanID:
     default: 60
     description: Vlan ID for the management network traffic.
-    type: number
-  StorageMgmtNetworkVlanID:
-    default: 70
-    description: Vlan ID for the storage management network traffic.
     type: number
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
@@ -89,47 +77,8 @@ resources:
         os_net_config:
           network_config:
             -
-              type: interface
-              name: eno1
-              use_dhcp: true
-              primary: true
-            -
               type: ovs_bridge
-              name: br-storage
-              members:
-                -
-                  type: interface
-                  name: enp94s0f0
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: StorageNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageIpSubnet}
-                -
-                  type: vlan
-                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageMgmtIpSubnet}
-            -
-              type: ovs_bridge
-              name: br-tenant
-              members:
-                -
-                  type: interface
-                  name: enp94s0f2
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: TenantNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: TenantIpSubnet}
-            -
-              type: ovs_bridge
-              name: br-ctl
+              name: br-ex
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -143,22 +92,39 @@ resources:
                 -
                   ip_netmask: 169.254.169.254/32
                   next_hop: {get_param: EC2MetadataIp}
-                -
-                  default: true
-                  next_hop: {get_param: ControlPlaneDefaultRoute}
               members:
                 -
                   type: interface
                   name: enp94s0f1
                   primary: true
+            -
+              type: ovs_bridge
+              name: br-storage
+              members:
+                -
+                  type: interface
+                  name: enp94s0f2
+                  primary: true
                 -
                   type: vlan
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  vlan_id: {get_param: StorageNetworkVlanID}
                   addresses:
                     -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
-
-
+                      ip_netmask: {get_param: StorageIpSubnet}
+            -
+              type: ovs_bridge
+              name: br-storagemgmt
+              members:
+                -
+                  type: interface
+                  name: enp94s0f3
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
