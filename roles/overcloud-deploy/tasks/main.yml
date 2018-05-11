@@ -4,7 +4,7 @@
 - name: Install ostag
   pip:
     state: latest
-    virtualenv: /home/stack/ostag-venv
+    virtualenv: /home/stack/alderaan-deploy/ostag-venv
     name: "{{item}}"
   with_items:
     - pip
@@ -14,15 +14,18 @@
   pip:
     name: os-client-config
     version: 1.29.0
-    virtualenv: /home/stack/ostag-venv
+    virtualenv: /home/stack/alderaan-deploy/ostag-venv
 
 - name: Template the Pinning script
   template:
     src: pin-nodes.sh.j2
-    dest: /home/stack/pin-nodes.sh
+    dest: /home/stack/alderaan-deploy/pin-nodes.sh
+    mode: 0744
 
 - name: Pin the nodes
-  shell: source /home/stack/stackrc; bash /home/stack/pin-nodes.sh
+  shell: |
+    . /home/stack/stackrc
+    /home/stack/alderaan-deploy/pin-nodes.sh
 
 - name: Template deploy script
   template:
