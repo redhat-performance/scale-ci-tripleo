@@ -1,5 +1,5 @@
 #!/bin/bash
-source $HOME/ostag-venv/bin/activate
+source /home/stack/alderaan-deploy/ostag-venv/bin/activate
 set -eux
 ostag -n {{num_controllers}} -p controller --hint {{controller_type}} -c
 {% for node_type in openstack_deployment_hosts %}
