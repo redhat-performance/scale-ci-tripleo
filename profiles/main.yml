@@ -17,9 +17,6 @@ introspection: true
 # better introspection, be sure to turn bulk off if you use this
 introspect_with_retry: false
 
-# Dump version file to this directory
-version_directory: /etc
-
 # Stack user password:
 # Make a new password:
 # python -c "from passlib.hash import sha512_crypt; print sha512_crypt.encrypt('password')"

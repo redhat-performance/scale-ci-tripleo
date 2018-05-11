@@ -67,7 +67,7 @@
   user:
     name: stack
     update_password: always
-    password: "{{ansible_ssh_pass}}"
+    password: "{{stack_password}}"
 
 - name: Sudo for stack user
   shell: |

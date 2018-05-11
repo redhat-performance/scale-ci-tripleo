@@ -39,7 +39,8 @@ network_gateway = 192.168.0.1
 #undercloud_nameservers =
 
 # List of ntp servers to use. (list value)
-undercloud_ntp_servers = {{ ntp_server }}
+#undercloud_ntp_servers =
+undercloud_ntp_servers = {{ntp_server}}
 
 # DNS domain name to use when deploying the overcloud. The overcloud
 # parameter "CloudDomain" must be set to a matching value. (string
@@ -196,7 +197,11 @@ inspection_iprange = 192.168.1.1,192.168.9.250
 
 # Whether to enable docker container images to be build on the
 # undercloud. (boolean value)
-#enable_container_images_build = false
+#enable_container_images_build = true
+
+# Array of host/port combiniations of docker insecure registries.
+# (string value)
+#docker_insecure_registries =
 
 # One Time Password to register Undercloud node with an IPA server.
 # Required when enable_novajoin = True. (string value)
@@ -211,10 +216,12 @@ inspection_iprange = 192.168.1.1,192.168.9.250
 # bare metal nodes you expect to deploy at once to work around
 # potential race condition when scheduling. (integer value)
 # Minimum value: 1
+#scheduler_max_attempts = 30
 scheduler_max_attempts = {{total_hosts}}
 
 # Whether to clean overcloud nodes (wipe the hard drive) between
 # deployments and after the introspection. (boolean value)
+#clean_nodes = false
 clean_nodes = {{node_cleaning}}
 
 # List of enabled bare metal drivers. (list value)
@@ -235,7 +242,7 @@ clean_nodes = {{node_cleaning}}
 # From instack-undercloud
 #
 
-# Password used for MySQL databases. If left unset, one will be
+# Password used for MySQL root user. If left unset, one will be
 # automatically generated. (string value)
 #undercloud_db_password = <None>
 
