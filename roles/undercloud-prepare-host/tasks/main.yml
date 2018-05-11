@@ -41,6 +41,11 @@
     - gcc
     - libselinux-python
 
+- name: Deploy .tmux.conf
+  copy:
+    content: set-option -g allow-rename off
+    dest: /root/.tmux.conf
+
 - name: Update Packages
   yum: name=* state=latest
 
