@@ -81,9 +81,6 @@ controller_type: 1029p
 num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
 
 ceph_host: 1029p  # There are no 1029u systems for the cloud05 environment.
-local_templates: true
-templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
-templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-staging/', true) }}"
 
 # Get the time server from the NTP_SERVER environment variable.
 ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
