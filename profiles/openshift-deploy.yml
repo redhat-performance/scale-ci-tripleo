@@ -80,9 +80,6 @@ openstack_deployment_hosts:
 controller_type: 1029p
 num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
 ceph_host: 1029u
-local_templates: false
-templates_repo: "{{ lookup('env', 'TEMPLATE_REPOSITORY') }}"
-templates_repo_path: "{{ lookup('env', 'TEMPLATE_REPOSITORY_PATH')|default('RDU-Scale/Ocata/openshift-scalelab-ci/', true) }}"
 
 # Get the time server from the NTP_SERVER environment variable.
 ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"

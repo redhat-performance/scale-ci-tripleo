@@ -1,21 +1,6 @@
 ---
 # tasks file for overcloud-prepare-templates
 
-- name: Clone the templates repo
-  local_action:
-    module: git
-    repo: "{{ templates_repo }}"
-    dest: "{{ playbook_dir }}/templates/"
-  when: not local_templates
-
-- name: Copy over folder for this deployment
-  copy:
-    src: "{{ playbook_dir }}/templates/{{ templates_repo_path|default('scale-ci/', true) }}"
-    dest: "/home/stack/templates"
-    owner: stack
-    group: stack
-  when: not local_templates
-
 - name: Copy Alderaan THT into templates directory
   copy:
     src: "{{item.src}}"
@@ -56,7 +41,6 @@
       dest: /home/stack/templates/nic-configs/1029p-controller.yaml
     - src: files/nic-configs/1029u-cephstorage.yaml
       dest: /home/stack/templates/nic-configs/1029u-cephstorage.yaml
-  when: local_templates
 
 - name: Replace controller type with our controller type
   lineinfile:
