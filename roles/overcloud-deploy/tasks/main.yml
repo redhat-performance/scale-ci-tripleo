@@ -30,6 +30,27 @@
     dest: /home/stack/alderaan-deploy/overcloud-deploy.sh
     mode: 0744
 
+- name: Check if "alderaan-undercloud" tmux exists
+  become: true
+  shell: tmux ls | grep -q alderaan-undercloud
+  register: tmux_install_exists
+  failed_when: tmux_install_exists.rc >= 2
+
+- name: Setup "alderaan-undercloud" tmux
+  become: true
+  shell: |
+    tmux -2 new-session -d -s alderaan-undercloud -n 'root'
+    tmux send-keys "cd /var/log" C-m
+    tmux new-window -t alderaan-undercloud:2 -n 'alderaan-deploy-log'
+    tmux send-keys "su - stack" C-m
+    tmux send-keys ". stackrc" C-m
+    tmux send-keys "cd /home/stack/alderaan-deploy/log" C-m
+    tmux new-window -t alderaan-undercloud:3 -n 'alderaan-undercloud'
+    tmux send-keys "su - stack" C-m
+    tmux send-keys ". stackrc" C-m
+    tmux select-window -t alderaan-undercloud:2
+  when: tmux_install_exists.rc == 1
+
 - name: Overcloud Deploy Block
   block:
     - name: Deploy the Overcloud
