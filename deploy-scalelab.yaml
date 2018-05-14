@@ -3,6 +3,14 @@
 # Playbook for deploying Tripleo OpenStack for OpenShift in ScaleLab
 #
 
+# Do not gather facts for rebuilding undercloud
+- name: Rebuild Undercloud
+  hosts: undercloud
+  gather_facts: false
+  remote_user: root
+  roles:
+    - rebuild-undercloud
+
 - name: Run initial setup tasks
   hosts: undercloud
   gather_facts: true
@@ -26,9 +34,7 @@
         path: "{{artifact_dir}}"
         state: directory
       delegate_to: localhost
-
   roles:
-    - rebuild-undercloud
     - undercloud-prepare-host
 
 - name: Run OSP install
