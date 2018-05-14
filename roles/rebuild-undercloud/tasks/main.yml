@@ -37,3 +37,9 @@
     port: 22
     delay: 600
     timeout: 2000
+
+# Depending on hardware rebuild, we may not have the ssh key exchanged
+- name: Setup root authorized key
+  authorized_key:
+    user: root
+    key: "{{ lookup('file', lookup('env','PUBLIC_KEY')| default('~/.ssh/id_rsa.pub', true)) }}"

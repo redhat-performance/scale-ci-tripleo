@@ -82,7 +82,7 @@
 - name: Setup authorized key upload
   authorized_key:
     user: stack
-    key: "{{ lookup('file', lookup('env','PUBLIC_KEY')) }}"
+    key: "{{ lookup('file', lookup('env','PUBLIC_KEY')| default('~/.ssh/id_rsa.pub', true)) }}"
 
 - name: Setup tripleo directories
   file:
