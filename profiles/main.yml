@@ -28,22 +28,39 @@ node_cleaning: true
 # python -c "from passlib.hash import sha512_crypt; print sha512_crypt.encrypt('password')"
 stack_password: $6$rounds=656000$3ZalBI1dHsb8kfJI$XbtraTo6qcAfAHR158Wf4mLoUrDQsTCIWSAZevFapJIq2OS/qATHQ39PwsJ6JusOBue3nxeNm5mTBM3m97EnQ.
 
-# undercloud control plane interface:
-local_interface: em2
+####################################################################################################
+# Network Setup
+####################################################################################################
+# Undercloud control plane interface:
+local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('enp94s0f1', true) }}"
 
-external_network_vip: 172.21.0.10
+# External Network Setup:
+# 0 - private external network (Unlimited private floating ips)
+# 1 - public external network (Limited public floating ips)
+external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default(0, true) }}"
 
-# External private vlan on undercloud:
-deploy_external_private_vlan: false
-external_vlan_device: em2.10
-private_external_address: 172.21.0.1
-private_external_netmask: 255.255.255.0
+# Settings for both Network Setups
+dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"
+external_vlan: "{{ lookup('env', 'OSP_EXTERNAL_VLAN')|default('10', true) }}"
+external_network_pool_start: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_START')|default('172.21.0.100', true) }}"
+external_network_pool_end: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_END')|default('172.21.255.254', true) }}"
+external_network_gateway: "{{ lookup('env', 'OSP_EXTERNAL_NET_GATEWAY')|default('172.21.0.1', true) }}"
+external_network_cidr: "{{ lookup('env', 'OSP_EXTERNAL_NET_CIDR')|default('172.21.0.0/16', true) }}"
+external_network_vip: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_VIP')|default('172.21.0.2', true) }}"
+
+# Network Settings specific to Network setup 0 (private external)
+undercloud_public_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_PUBLIC_INTERFACE')|default('eno1', true) }}"
+undercloud_external_vlan_device: "{{ lookup('env', 'OSP_UNDERCLOUD_PRIVATE_EXTERNAL_INTERFACE')|default('enp94s0f3', true) }}.{{external_vlan}}"
+
+private_external_address: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_ADDRESS')|default('172.21.0.1', true) }}"
+private_external_netmask: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
+
+# Network Settings specific to Network setup 1 (public external)
+# None for now
+
 
 # Get the time server from the NTP_SERVER environment variable.
 ntp_server: "{{ lookup('env', 'NTP_SERVER')|default('0.pool.ntp.org', true) }}"
-
-# neutron dns:
-dns_server: 8.8.8.8
 
 # instackenv:
 instackenv_json:

@@ -82,7 +82,21 @@ resources:
           network_config:
             -
               type: ovs_bridge
-              name: br-ex
+              name: br-tenant
+              members:
+                -
+                  type: interface
+                  name: enp94s0f0
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: TenantIpSubnet}
+            -
+              type: ovs_bridge
+              name: br-internalapi
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -107,20 +121,6 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: InternalApiIpSubnet}
-            -
-              type: ovs_bridge
-              name: br-tenant
-              members:
-                -
-                  type: interface
-                  name: enp94s0f0
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: TenantNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: TenantIpSubnet}
             -
               type: ovs_bridge
               name: br-storage

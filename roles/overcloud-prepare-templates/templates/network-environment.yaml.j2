@@ -1,6 +1,6 @@
 resource_registry:
-  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/1029p-controller.yaml
-  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/1029u-cephstorage.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{controller_type}}-controller.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{ceph_host}}-cephstorage.yaml
 
   OS::TripleO::P1029Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/1029p-compute.yaml
   OS::TripleO::P1029Compute::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/noop.yaml
@@ -16,27 +16,29 @@ parameter_defaults:
   StorageNetCidr: 172.18.0.0/16
   StorageMgmtNetCidr: 172.19.0.0/16
   ManagementNetCidr: 172.20.0.0/16
-  ExternalNetCidr: 172.21.0.0/16
+  ExternalNetCidr: "{{external_network_cidr}}"
+  # ExternalNetCidr: 172.21.0.0/16
   InternalApiAllocationPools: [{'start': '172.16.0.3', 'end': '172.16.255.254'}]
   TenantAllocationPools: [{'start': '172.17.0.3', 'end': '172.17.255.254'}]
   StorageAllocationPools: [{'start': '172.18.0.3', 'end': '172.18.255.254'}]
   StorageMgmtAllocationPools: [{'start': '172.19.0.3', 'end': '172.19.255.254'}]
   ManagementAllocationPools: [{'start': '172.20.0.3', 'end': '172.20.255.254'}]
-  ExternalAllocationPools: [{'start': '172.21.0.3', 'end': '172.21.0.99'}]
+  ExternalAllocationPools: [{'start': '{{external_network_pool_start}}', 'end': '{{external_network_pool_end}}'}]
+  # ExternalAllocationPools: [{'start': '{{172.21.0.3}}', 'end': '172.21.0.99'}]
   # Set to the router gateway on the external network
-  ExternalInterfaceDefaultRoute: 172.21.0.1
-  PublicVirtualFixedIPs: [{'ip_address':'172.21.0.2'}]
+  ExternalInterfaceDefaultRoute: "{{external_network_gateway}}"
+  PublicVirtualFixedIPs: [{'ip_address':'{{external_network_vip}}'}]
   # Gateway router for the provisioning network (or Undercloud IP)
   ControlPlaneDefaultRoute: 192.168.0.1
   ControlPlaneSubnetCidr: 16
   # The IP address of the EC2 metadata server. Generally the IP of the Undercloud
   EC2MetadataIp: 192.168.0.1
   # Define the DNS servers (maximum 2) for the overcloud nodes
-  DnsServers: ["10.11.5.19"]
+  DnsServers: ["{{dns_server}}"]
   InternalApiNetworkVlanID: 301
   StorageNetworkVlanID: 302
   StorageMgmtNetworkVlanID: 303
   TenantNetworkVlanID: 304
   ManagementNetworkVlanID: 305
-  ExternalNetworkVlanID: 10
+  ExternalNetworkVlanID: "{{external_vlan}}"
   # Set to "br-ex" if using floating IPs on native VLAN on bridge br-ex

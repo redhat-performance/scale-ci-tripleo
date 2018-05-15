@@ -122,23 +122,26 @@
     owner: stack
     group: stack
 
-- name: Deploy Private external vlan interface
+- name: Deploy private external vlan interface (external_network_setup - 0 only)
   template:
     src: templates/ifcfg-vlan.j2
-    dest: "/etc/sysconfig/network-scripts/ifcfg-{{external_vlan_device}}"
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{undercloud_external_vlan_device}}"
     owner: root
     group: root
-  when: deploy_external_private_vlan | bool
+  when:
+    - external_network_setup == 0
 
-- name: Turn on Private external vlan interface
-  shell: ifup {{external_vlan_device}}
-  when: deploy_external_private_vlan | bool
+- name: Turn on private external vlan interface (external_network_setup - 0 only)
+  shell: ifup {{undercloud_external_vlan_device}}
+  when:
+    - external_network_setup == 0
 
-- name: Setup traffic fowarding
+- name: Setup traffic fowarding for private external network (external_network_setup - 0 only)
   shell: |
      echo 1 > /proc/sys/net/ipv4/ip_forward
-     iptables -t nat -A POSTROUTING -o {{public_net_device}} -j MASQUERADE
-     iptables -A FORWARD -i {{public_net_device}} -o {{external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
-     iptables -A FORWARD -i {{external_vlan_device}} -o {{public_net_device}} -j ACCEPT
+     iptables -t nat -A POSTROUTING -o {{undercloud_public_interface}} -j MASQUERADE
+     iptables -A FORWARD -i {{undercloud_public_interface}} -o {{undercloud_external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
+     iptables -A FORWARD -i {{undercloud_external_vlan_device}} -o {{undercloud_public_interface}} -j ACCEPT
      iptables-save > /etc/sysconfig/iptables
-  when: deploy_external_private_vlan | bool and deploy_external_private_nat | bool
+  when:
+    - external_network_setup == 0

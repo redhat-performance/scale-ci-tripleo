@@ -26,32 +26,36 @@ node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(true, true) }}"
 # Stack user password. Encrypted with sha512
 stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
 
-# undercloud control plane interface:
-local_interface: enp94s0f1
+####################################################################################################
+# Network Setup
+####################################################################################################
+# Undercloud control plane interface:
+local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('enp94s0f1', true) }}"
 
-external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
+# External Network Setup:
+# 0 - private external network (Unlimited private floating ips)
+# 1 - public external network (Limited public floating ips)
+external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default(0, true) }}"
 
-# External private vlan on undercloud:
-public_net_device: eno1
-# Deploy a vlan device for the external private network.
-deploy_external_private_vlan: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_LAN')|default(true, true) }}"
-# Do not use Network Address Translation (NAT) to route the traffic to this device.
-deploy_external_private_nat: "{{ lookup('env', 'DEPLOY_EXTERNAL_PRIVATE_NAT')|default(false, true) }}"
-# The external vlan to use for creating the OpenStack public network.
-external_vlan: "{{ lookup('env', 'EXTERNAL_VLAN')|default('620', true) }}"
-# The external vlan device name.
-external_vlan_device: "enp94s0f3.{{ external_vlan }}"
-private_external_address: "{{ lookup('env', 'PRIVATE_EXTERNAL_ADDRESS') }}"
-private_external_netmask: "{{ lookup('env', 'PRIVATE_EXTERNAL_NETMASK')|default('255.255.255.192', true) }}"
+# Settings for both Network Setups
+dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"
+external_vlan: "{{ lookup('env', 'OSP_EXTERNAL_VLAN')|default('10', true) }}"
+external_network_pool_start: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_START')|default('172.21.0.100', true) }}"
+external_network_pool_end: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_END')|default('172.21.255.254', true) }}"
+external_network_gateway: "{{ lookup('env', 'OSP_EXTERNAL_NET_GATEWAY')|default('172.21.0.1', true) }}"
+external_network_cidr: "{{ lookup('env', 'OSP_EXTERNAL_NET_CIDR')|default('172.21.0.0/16', true) }}"
+external_network_vip: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_VIP')|default('172.21.0.2', true) }}"
 
-# Public subnet settings:
-subnet_pool_start: "{{ lookup('env', 'SUBNET_POOL_START')|default('10.12.95.203', true) }}"
-subnet_pool_end: "{{ lookup('env', 'SUBNET_POOL_END')|default('10.12.95.251', true) }}"
-subnet_gateway: "{{ lookup('env', 'SUBNET_GATEWAY')|default('10.12.95.254', true) }}"
-subnet_range: "{{ lookup('env', 'SUBNET_RANGE')|default('10.12.95.192/26', true) }}"
+# Network Settings specific to Network setup 0 (private external)
+undercloud_public_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_PUBLIC_INTERFACE')|default('eno1', true) }}"
+undercloud_external_vlan_device: "{{ lookup('env', 'OSP_UNDERCLOUD_PRIVATE_EXTERNAL_INTERFACE')|default('enp94s0f3', true) }}.{{external_vlan}}"
 
-# neutron dns:
-dns_server: "{{ lookup('env', 'DNS_SERVER') }}"
+private_external_address: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_ADDRESS')|default('172.21.0.1', true) }}"
+private_external_netmask: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
+
+# Network Settings specific to Network setup 1 (public external)
+# None for now
+
 
 # instackenv:
 instackenv_json: "{{ lookup('env', 'INSTACKENV_JSON') }}"
