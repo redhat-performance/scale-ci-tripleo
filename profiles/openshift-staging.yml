@@ -11,20 +11,23 @@ build: z4
 
 overcloud_image_password: debug
 
+# Introspection parameters:
+# No introspection at all - adjusts instackenv to not require introspection
+instackenv_no_introspection: "{{ lookup('env', 'OSP_INSTACKENV_NO_INTROSPECTION')|default(true, true) }}"
+node_provide_timeout: "{{ lookup('env', 'OSP_NODE_PROVIDE_TIMEOUT')|default(1800, true) }}"
 # bulk introspection
-introspection: false
+introspection: "{{ lookup('env', 'OSP_BULK_INTROSPECTION')|default(false, true) }}"
+# Introspection Script (Disable bulk if using)
+introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(false, true) }}"
 
-# better introspection, be sure to turn bulk off if you use this
-introspect_with_retry: true
+# Ironic automated cleaning (Use when introspection script is disabled)
+node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(true, true) }}"
 
 # Stack user password. Encrypted with sha512
 stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
 
 # undercloud control plane interface:
 local_interface: enp94s0f1
-
-# option to enable/disable ironic node cleaning on overcloud nodes
-node_cleaning: false
 
 external_network_vip: "{{ lookup('env', 'EXTERNAL_NETWORK_VIP') }}"
 
