@@ -9,6 +9,8 @@ rhel_version: 7.4
 rhos_release: 12-director
 build: "2017-07-22.2"
 
+rebuild_undercloud: "{{ lookup('env', 'OSP_REBUILD_UNDERCLOUD')|default(true, true) }}"
+
 overcloud_image_password: debug
 
 # Introspection parameters:

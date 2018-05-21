@@ -12,12 +12,14 @@
     url: "{{foreman_url}}/api/hosts/{{undercloud_hostname}}"
     user: "{{cloud_title}}"
     validate_certs: false
+  when: rebuild_undercloud | bool
 
 - name: Reboot undercloud
   shell: "sleep 5; reboot now"
   async: 1
   poll: 0
   ignore_errors: true
+  when: rebuild_undercloud | bool
 
 # Stop gap to prevent a machine that is slow to reboot from passing
 - name: Wait for Machine Rebuilding
@@ -29,6 +31,7 @@
     timeout: 300
     state: stopped
   register: wait_for_data
+  when: rebuild_undercloud | bool
 
 - name: Wait for Machine Rebuild to complete
   local_action:
@@ -37,6 +40,7 @@
     port: 22
     delay: 600
     timeout: 2000
+  when: rebuild_undercloud | bool
 
 # Depending on hardware rebuild, we may not have the ssh key exchanged
 - name: Setup root authorized key
