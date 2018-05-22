@@ -78,8 +78,9 @@ resources:
           network_config:
             -
               type: ovs_bridge
-              name: br-sm
+              name: br-ex
               use_dhcp: false
+              dns_servers: {get_param: DnsServers}
               addresses:
                 -
                   ip_netmask:
@@ -96,12 +97,6 @@ resources:
                   type: interface
                   name: enp94s0f1
                   primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageMgmtIpSubnet}
             -
               type: ovs_bridge
               name: br-storage
@@ -116,6 +111,20 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: StorageIpSubnet}
+            -
+              type: ovs_bridge
+              name: br-sm
+              members:
+                -
+                  type: interface
+                  name: enp94s0f3
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.

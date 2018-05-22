@@ -30,15 +30,24 @@
     - src: files/scheduler-hints.yaml
       dest: /home/stack/templates/scheduler-hints.yaml
 
-    # Nic-config "templates"
-    - src: files/nic-configs/1029p-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/1029p-cephstorage.yaml
-    - src: files/nic-configs/1029p-compute.yaml
-      dest: /home/stack/templates/nic-configs/1029p-compute.yaml
-    - src: files/nic-configs/1029p-controller.yaml
-      dest: /home/stack/templates/nic-configs/1029p-controller.yaml
-    - src: files/nic-configs/1029u-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/1029u-cephstorage.yaml
+    # Private External Nic-config "templates"
+    - src: files/nic-configs/private/1029p-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/0/1029p-cephstorage.yaml
+    - src: files/nic-configs/private/1029p-compute.yaml
+      dest: /home/stack/templates/nic-configs/0/1029p-compute.yaml
+    - src: files/nic-configs/private/1029p-controller.yaml
+      dest: /home/stack/templates/nic-configs/0/1029p-controller.yaml
+    - src: files/nic-configs/private/1029u-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/0/1029u-cephstorage.yaml
+    # Public External Nic-config "templates"
+    - src: files/nic-configs/public/1029p-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/1/1029p-cephstorage.yaml
+    - src: files/nic-configs/public/1029p-compute.yaml
+      dest: /home/stack/templates/nic-configs/1/1029p-compute.yaml
+    - src: files/nic-configs/public/1029p-controller.yaml
+      dest: /home/stack/templates/nic-configs/1/1029p-controller.yaml
+    - src: files/nic-configs/public/1029u-cephstorage.yaml
+      dest: /home/stack/templates/nic-configs/1/1029u-cephstorage.yaml
 
 - name: Copy Alderaan THT Templates into templates directory
   template:
