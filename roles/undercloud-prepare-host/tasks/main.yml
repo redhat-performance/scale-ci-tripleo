@@ -28,7 +28,7 @@
   yum: name=/root/rhos-release.rpm
 
 - name: Setup OSP version to install
-  command: "rhos-release {{rhos_release}} -r {{rhel_version}}"
+  command: "rhos-release {{rhos_release}} -p {{build}} -r {{rhel_version}}"
 
 - name: Install utilities
   yum: name={{item}}
