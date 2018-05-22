@@ -78,7 +78,7 @@ resources:
           network_config:
             -
               type: ovs_bridge
-              name: br-storagemgmt
+              name: br-sm
               use_dhcp: false
               addresses:
                 -

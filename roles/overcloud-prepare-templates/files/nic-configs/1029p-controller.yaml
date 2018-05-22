@@ -102,7 +102,7 @@ resources:
                       ip_netmask: {get_param: TenantIpSubnet}
             -
               type: ovs_bridge
-              name: br-int-storagemgmt
+              name: br-int-sm
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
