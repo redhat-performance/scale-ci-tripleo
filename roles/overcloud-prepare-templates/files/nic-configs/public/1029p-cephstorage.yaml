@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 
 description: >
   Software Config to drive os-net-config to configure VLANs for the
-  compute role.
+  ceph storage role.
 
 parameters:
   ControlPlaneIp:
@@ -33,17 +33,13 @@ parameters:
     default: ''
     description: IP address/subnet on the management network
     type: string
-  InternalApiNetworkVlanID:
-    default: 20
-    description: Vlan ID for the internal_api network traffic.
-    type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
-  TenantNetworkVlanID:
-    default: 50
-    description: Vlan ID for the tenant network traffic.
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
     type: number
   ManagementNetworkVlanID:
     default: 60
@@ -81,24 +77,14 @@ resources:
         os_net_config:
           network_config:
             -
-              type: ovs_bridge
-              name: br-tenant
-              members:
-                -
-                  type: interface
-                  name: enp94s0f0
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: TenantNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: TenantIpSubnet}
+              type: interface
+              name: eno1
+              dns_servers: {get_param: DnsServers}
+              use_dhcp: true
             -
               type: ovs_bridge
-              name: br-int
+              name: br-sm
               use_dhcp: false
-              dns_servers: {get_param: DnsServers}
               addresses:
                 -
                   ip_netmask:
@@ -110,6 +96,9 @@ resources:
                 -
                   ip_netmask: 169.254.169.254/32
                   next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: false
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
               members:
                 -
                   type: interface
@@ -117,10 +106,10 @@ resources:
                   primary: true
                 -
                   type: vlan
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
                   addresses:
                     -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
             -
               type: ovs_bridge
               name: br-storage

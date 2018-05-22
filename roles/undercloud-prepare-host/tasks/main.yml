@@ -96,6 +96,8 @@
     - /home/stack/templates/environments
     - /home/stack/templates/firstboot
     - /home/stack/templates/nic-configs
+    - /home/stack/templates/nic-configs/0
+    - /home/stack/templates/nic-configs/1
     - /home/stack/alderaan-deploy
     - /home/stack/alderaan-deploy/log
     - "{{log_dir}}"

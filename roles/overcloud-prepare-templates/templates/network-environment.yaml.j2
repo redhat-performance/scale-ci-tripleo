@@ -1,8 +1,9 @@
 resource_registry:
-  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{controller_type}}-controller.yaml
-  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{ceph_host}}-cephstorage.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/{{controller_type}}-controller.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/{{ceph_host}}-cephstorage.yaml
 
-  OS::TripleO::P1029Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/1029p-compute.yaml
+  OS::TripleO::P1029Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/1029p-compute.yaml
+
   OS::TripleO::P1029Compute::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/noop.yaml
   OS::TripleO::P1029Compute::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
   OS::TripleO::P1029Compute::Ports::StoragePort: /usr/share/openstack-tripleo-heat-templates/network/ports/storage.yaml
@@ -17,7 +18,6 @@ parameter_defaults:
   StorageMgmtNetCidr: 172.19.0.0/16
   ManagementNetCidr: 172.20.0.0/16
   ExternalNetCidr: "{{external_network_cidr}}"
-  # ExternalNetCidr: 172.21.0.0/16
   InternalApiAllocationPools: [{'start': '172.16.0.3', 'end': '172.16.255.254'}]
   TenantAllocationPools: [{'start': '172.17.0.3', 'end': '172.17.255.254'}]
   StorageAllocationPools: [{'start': '172.18.0.3', 'end': '172.18.255.254'}]
