@@ -1,0 +1,72 @@
+---
+#
+# Install Browbeat Monitoring on OpenStack
+#
+
+- name: Install Browbeat Monitoring on the Undercloud
+  hosts: undercloud
+  gather_facts: false
+  remote_user: stack
+  vars:
+    configuration:
+      - regexp: "dns_server: [0-9]*.[0-9]*.[0-9]*.[0-9]*"
+        replace: "dns_server: {{ lookup('env', 'DNS_SERVER') }}"
+      - regexp: "graphite_host:.*"
+        replace: "graphite_host: {{ lookup('env', 'GRAPHITE') }}"
+      - regexp: "graphite_prefix:.*"
+        replace: "graphite_prefix: {{ lookup('env', 'GRAPHITE_PREFIX') }}"
+
+      - regexp: "collectd_compute:.*"
+        replace: "collectd_compute: {{ lookup('env', 'BROWBEAT_COLLECTD_COMPUTE') }}"
+      - regexp: "rabbitmq_controller_collectd_plugin:.*"
+        replace: "rabbitmq_controller_collectd_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_RABBITMQ') }}"
+      - regexp: "ceph_controller_collectd_mon_plugin:.*"
+        replace: "ceph_controller_collectd_mon_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+      - regexp: "ceph_controller_collectd_osd_plugin:.*"
+        replace: "ceph_controller_collectd_osd_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+      - regexp: "ceph_controller_collectd_pg_plugin:.*"
+        replace: "ceph_controller_collectd_pg_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+      - regexp: "ceph_controller_collectd_pool_plugin:.*"
+        replace: "ceph_controller_collectd_pool_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+
+  tasks:
+    - name: Ensure remote log directory exists
+      file:
+        path: /home/stack/alderaan-deploy/log/browbeat
+        state: directory
+        owner: stack
+        group: stack
+
+    - name: Clone Browbeat on Undercloud
+      git:
+        repo: https://github.com/openstack/browbeat.git
+        dest: /home/stack/browbeat
+        version: master
+        force: true
+
+    - name: Generate tripleo hosts and ssh-config
+      shell: |
+        cd /home/stack/browbeat/ansible
+        . /home/stack/stackrc
+        /home/stack/browbeat/ansible/generate_tripleo_hostfile.sh -l
+
+    - name: Configure Browbeat Monitoring
+      replace:
+        path: /home/stack/browbeat/ansible/install/group_vars/all.yml"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.replace }}"
+      with_items: "{{ configuration }}"
+
+    - name: Install Browbeat collectd Block
+      block:
+        - name: Deploy collectd on Overcloud
+          shell: |
+            set -o pipefail
+            cd /home/stack/browbeat/ansible
+            { time ansible-playbook -i hosts install/collectd-openstack.yml --forks 50 2>&1 | tee -a /home/stack/alderaan-deploy/log/browbeat/collectd-overcloud-install.log ; } 2>> /home/stack/alderaan-deploy/log/browbeat/collectd-overcloud-install.log
+      always:
+        - name: Collect Install Browbeat collectd Artifacts
+          synchronize:
+            src: /home/stack/alderaan-deploy/log/browbeat
+            dest: artifacts
+            mode: pull
