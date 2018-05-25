@@ -1,0 +1,22 @@
+---
+# Browbeat vars
+
+configuration:
+  - regexp: "dns_server: [0-9]*.[0-9]*.[0-9]*.[0-9]*"
+    replace: "dns_server: {{ lookup('env', 'BROWBEAT_DNS_SERVER') }}"
+  - regexp: "graphite_host:.*"
+    replace: "graphite_host: {{ lookup('env', 'BROWBEAT_GRAPHITE') }}"
+  - regexp: "graphite_prefix:.*"
+    replace: "graphite_prefix: {{ lookup('env', 'BROWBEAT_GRAPHITE_PREFIX') }}"
+  - regexp: "collectd_compute:.*"
+    replace: "collectd_compute: {{ lookup('env', 'BROWBEAT_COLLECTD_COMPUTE') }}"
+  - regexp: "rabbitmq_controller_collectd_plugin:.*"
+    replace: "rabbitmq_controller_collectd_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_RABBITMQ') }}"
+  - regexp: "ceph_controller_collectd_mon_plugin:.*"
+    replace: "ceph_controller_collectd_mon_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+  - regexp: "ceph_controller_collectd_osd_plugin:.*"
+    replace: "ceph_controller_collectd_osd_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+  - regexp: "ceph_controller_collectd_pg_plugin:.*"
+    replace: "ceph_controller_collectd_pg_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"
+  - regexp: "ceph_controller_collectd_pool_plugin:.*"
+    replace: "ceph_controller_collectd_pool_plugin: {{ lookup('env', 'BROWBEAT_COLLECTD_CEPH') }}"

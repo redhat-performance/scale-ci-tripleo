@@ -1,0 +1,4 @@
+---
+# Vars that do not require much (if any) adjustment
+
+overcloud_image_password: debug
