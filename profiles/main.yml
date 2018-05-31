@@ -39,7 +39,7 @@ local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('en
 # External Network Setup:
 # 0 - private external network (Unlimited private floating ips)
 # 1 - public external network (Limited public floating ips)
-external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default(0, true) }}"
+external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('0', true) }}"
 
 # Settings for both Network Setups
 dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"
