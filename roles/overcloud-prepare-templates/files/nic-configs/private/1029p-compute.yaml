@@ -81,32 +81,10 @@ resources:
         os_net_config:
           network_config:
             -
-              type: ovs_bridge
-              name: br-ex
-              use_dhcp: false
+              type: interface
+              name: eno1
               dns_servers: {get_param: DnsServers}
-              addresses:
-                -
-                  ip_netmask:
-                    list_join:
-                      - '/'
-                      - - {get_param: ControlPlaneIp}
-                        - {get_param: ControlPlaneSubnetCidr}
-              routes:
-                -
-                  ip_netmask: 169.254.169.254/32
-                  next_hop: {get_param: EC2MetadataIp}
-              members:
-                -
-                  type: interface
-                  name: enp94s0f1
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
+              use_dhcp: true
             -
               type: ovs_bridge
               name: br-tenant
@@ -123,6 +101,35 @@ resources:
                       ip_netmask: {get_param: TenantIpSubnet}
             -
               type: ovs_bridge
+              name: br-int
+              use_dhcp: false
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: false
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
+              members:
+                -
+                  type: interface
+                  name: enp94s0f1
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet}
+            -
+              type: ovs_bridge
               name: br-storage
               members:
                 -
@@ -135,6 +142,12 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: StorageIpSubnet}
+            -
+              type: interface
+              name: enp94s0f3
+              use_dhcp: false
+              defroute: false
+              onboot: false
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.

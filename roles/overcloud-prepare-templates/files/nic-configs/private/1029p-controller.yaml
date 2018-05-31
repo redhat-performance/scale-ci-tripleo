@@ -70,6 +70,9 @@ parameters:
     default: '24'
     description: The subnet CIDR of the control plane network.
     type: string
+  ControlPlaneDefaultRoute: # Override this via parameter_defaults
+    description: The default route of the control plane network.
+    type: string
   DnsServers: # Override this via parameter_defaults
     default: []
     description: A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
@@ -87,38 +90,10 @@ resources:
         os_net_config:
           network_config:
             -
-              type: ovs_bridge
-              name: br-ex
-              use_dhcp: false
+              type: interface
+              name: eno1
               dns_servers: {get_param: DnsServers}
-              addresses:
-                -
-                  ip_netmask:
-                    list_join:
-                      - '/'
-                      - - {get_param: ControlPlaneIp}
-                        - {get_param: ControlPlaneSubnetCidr}
-              routes:
-                -
-                  ip_netmask: 169.254.169.254/32
-                  next_hop: {get_param: EC2MetadataIp}
-              members:
-                -
-                  type: interface
-                  name: enp94s0f1
-                  primary: true
-                -
-                  type: vlan
-                  vlan_id: {get_param: ExternalNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: ExternalIpSubnet}
-                -
-                  type: vlan
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
+              use_dhcp: true
             -
               type: ovs_bridge
               name: br-tenant
@@ -135,6 +110,41 @@ resources:
                       ip_netmask: {get_param: TenantIpSubnet}
             -
               type: ovs_bridge
+              name: br-int-sm
+              use_dhcp: false
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: false
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
+              members:
+                -
+                  type: interface
+                  name: enp94s0f1
+                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet}
+                -
+                  type: vlan
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
+            -
+              type: ovs_bridge
               name: br-storage
               members:
                 -
@@ -149,7 +159,7 @@ resources:
                       ip_netmask: {get_param: StorageIpSubnet}
             -
               type: ovs_bridge
-              name: br-sm
+              name: br-ex
               members:
                 -
                   type: interface
@@ -157,10 +167,10 @@ resources:
                   primary: true
                 -
                   type: vlan
-                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  vlan_id: {get_param: ExternalNetworkVlanID}
                   addresses:
                     -
-                      ip_netmask: {get_param: StorageMgmtIpSubnet}
+                      ip_netmask: {get_param: ExternalIpSubnet}
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
