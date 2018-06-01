@@ -15,7 +15,6 @@
         replace: "graphite_host: {{ lookup('env', 'GRAPHITE') }}"
       - regexp: "graphite_prefix:.*"
         replace: "graphite_prefix: {{ lookup('env', 'GRAPHITE_PREFIX') }}"
-
       - regexp: "collectd_compute:.*"
         replace: "collectd_compute: {{ lookup('env', 'BROWBEAT_COLLECTD_COMPUTE') }}"
       - regexp: "rabbitmq_controller_collectd_plugin:.*"
@@ -51,11 +50,27 @@
         /home/stack/browbeat/ansible/generate_tripleo_hostfile.sh -l
 
     - name: Configure Browbeat Monitoring
-      replace:
-        path: /home/stack/browbeat/ansible/install/group_vars/all.yml"
+      lineinfile:
+        path: "/home/stack/browbeat/ansible/install/group_vars/all.yml"
         regexp: "{{ item.regexp }}"
         line: "{{ item.replace }}"
       with_items: "{{ configuration }}"
+
+    # Allows more ssh connections through the undercloud for forks.
+    - name: Increase MaxStartups in sshd
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "MaxStartups.*"
+        line: "MaxStartups 100"
+        state: present
+        backup: true
+      become: true
+
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: reloaded
+      become: true
 
     - name: Install Browbeat collectd Block
       block:
