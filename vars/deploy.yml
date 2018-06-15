@@ -1,17 +1,25 @@
 ---
-# All variables needed to deploy the tripleo-quickstart-scalelab project.
-
-rhos_release_rpm: "{{ lookup('env', 'RHOS_RELEASE_URL') }}"
+####################################################################################################
+# OpenStack Version/Build Variables
+####################################################################################################
+rhos_release_rpm: "{{ lookup('env', 'OSP_RHOS_RELEASE_URL') }}"
 
 # OSP/OSPd versioning and build
-version: 11
-rhel_version: 7.4
-rhos_release: 11-director
-build: z4
+version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default(11, true) }}"
+rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default(7.4, true) }}"
+rhos_release: "{{ lookup('env', 'OSP_RHOS_RELEASE_VERSION')|default('11-director', true) }}"
+build: "{{ lookup('env', 'OSP_RHOS_BUILD')|default('z4', true) }}"
 
+####################################################################################################
+# Undercloud Variables
+####################################################################################################
 rebuild_undercloud: "{{ lookup('env', 'OSP_REBUILD_UNDERCLOUD')|default(true, true) }}"
+undercloud_hostname: "{{ lookup('env', 'OSP_UNDERCLOUD_HOSTNAME') }}"
+ticket_number: "{{ lookup('env', 'OSP_QUADS_TICKET_NUMBER') }}"
+foreman_url: "{{ lookup('env', 'OSP_QUADS_FOREMAN_URL') }}"
 
-overcloud_image_password: debug
+# Stack user password. Encrypted with sha512
+stack_password: "{{ lookup('env', 'OSP_STACK_PASSWORD') }}"
 
 # Introspection parameters:
 # No introspection at all - adjusts instackenv to not require introspection
@@ -25,14 +33,44 @@ introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(tru
 # Ironic automated cleaning (Use when introspection script is disabled)
 node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"
 
-# Stack user password. Encrypted with sha512
-stack_password: "{{ lookup('env', 'STACK_PASSWORD') }}"
+####################################################################################################
+# Overcloud Variables
+####################################################################################################
+instackenv_json: "{{ lookup('env', 'OSP_INSTACKENV_JSON') }}"
+
+cloud_title: "{{ lookup('env', 'OSP_CLOUD_TITLE') }}"
+
+# Defaults for SLC1 (16 Nodes)
+controller_type: "{{ lookup('env', 'OSP_CONTROLLER_TYPE')|default('1029p', true) }}"
+cephstorage_type: "{{ lookup('env', 'OSP_CEPHSTORAGE_TYPE')|default('1029p', true) }}"
+compute_type: "{{ lookup('env', 'OSP_COMPUTE_TYPE')|default('1029p', true) }}"
+
+num_controllers: "{{ lookup('env', 'OSP_NUM_CONTROLLERS')|default(3, true) }}"
+num_storage: "{{ lookup('env', 'OSP_NUM_CEPHSTORAGE')|default(3, true) }}"
+num_compute: "{{ lookup('env', 'OSP_NUM_COMPUTE')|default(9, true) }}"
+
+# Must be >= total number of hosts used for undercloud tuning
+total_hosts: "{{ num_compute | int + num_storage | int }}"
+
+openstack_deployment_hosts:
+  - host_type:
+      pin: compute
+      title: Compute
+      hint: "{{compute_type}}"
+      count: "{{num_compute}}"
+  - host_type:
+      pin: cephstorage
+      title: CephStorage
+      hint: "{{cephstorage_type}}"
+      count: "{{num_storage}}"
 
 ####################################################################################################
-# Network Setup
+# Undercloud and Overcloud Network Setup
 ####################################################################################################
 # Undercloud control plane interface:
 local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('enp94s0f1', true) }}"
+
+ntp_server: "{{ lookup('env', 'OSP_NTP_SERVER') }}"
 
 # External Network Setup:
 # 0 - private external network (Unlimited private floating ips)
@@ -61,43 +99,3 @@ private_external_netmask: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_NETMASK')|defa
 
 # Network Settings specific to Network setup 1 (public external)
 # None for now
-
-
-# instackenv:
-instackenv_json: "{{ lookup('env', 'INSTACKENV_JSON') }}"
-
-cloud_title: "{{ lookup('env', 'CLOUD_TITLE') }}"
-ticket_number: "{{ lookup('env', 'TICKET_NUMBER') }}"
-foreman_url: "{{ lookup('env', 'FOREMAN_URL') }}"
-undercloud_hostname: "{{ lookup('env', 'UNDERCLOUD_HOSTNAME') }}"
-
-# 47 total systems - 1 undercloud - 5 storage - 3 OpenStack controllers
-num_compute: "{{ lookup('env', 'NUM_COMPUTE')|default(37, true) }}"
-num_storage: "{{ lookup('env', 'NUM_STORAGE')|default(5, true) }}"
-
-# Must be >= total number of hosts used for undercloud tuning
-total_hosts: "{{ num_compute | int + num_storage | int }}"
-
-openstack_deployment_hosts:
-  - host_type:
-      pin: 1029pcompute # as mapped in roles data under HostnameFormatDefault will have -# appended to lock hosts to machines
-      title: P1029Compute # The actual title we use to deploy the role, the name field in roles data
-      hint: "1029p" # The hint we look for in the management address string to determine what type of host we're looking at
-      count: "{{ num_compute }}" # number of 1029p hosts
-  - host_type: #1029u's in the current template
-      pin: cephstorage
-      title: CephStorage
-      hint: "1029u"
-      count: "{{ num_storage }}" # The number of systems to use for storage.
-
-controller_type: 1029p
-num_controllers: "{{ lookup('env', 'NUM_CONTROLLERS')|default(3, true) }}"
-ceph_host: 1029u
-
-# Get the time server from the NTP_SERVER environment variable.
-ntp_server: "{{ lookup('env', 'NTP_SERVER') }}"
-
-# Metadata storage
-graphite_host: "{{ lookup('env', 'GRAPHITE') }}"
-# Graphite prefix / Cloud name used both with graphite and grafana dashboards
-graphite_prefix: "{{ lookup('env', 'CLOUD_NAME') }}"

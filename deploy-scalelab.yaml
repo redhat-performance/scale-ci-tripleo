@@ -8,6 +8,9 @@
   hosts: undercloud
   gather_facts: false
   remote_user: root
+  vars_files:
+    - vars/data.yml
+    - vars/deploy.yml
   roles:
     - rebuild-undercloud
 
@@ -15,6 +18,9 @@
   hosts: undercloud
   gather_facts: true
   remote_user: root
+  vars_files:
+    - vars/data.yml
+    - vars/deploy.yml
   pre_tasks:
     - name: Get timestamp
       command: date -u +%Y%m%d-%H%M%S
@@ -41,6 +47,9 @@
   hosts: undercloud
   gather_facts: false
   remote_user: stack
+  vars_files:
+    - vars/data.yml
+    - vars/deploy.yml
   roles:
     - undercloud-install
     - overcloud-prepare-templates
