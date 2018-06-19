@@ -1,5 +1,22 @@
 ---
-# tasks file for rebuild-undercloud
+- name: Get the instackenv content for this cloud
+  uri:
+    url: "{{ instackenv_json }}"
+  register: uri_response
+
+- name: Count the number of nodes in instackenv
+  set_fact:
+    instackenv_nodes: "{{ uri_response['json']['nodes']|length }}"
+
+- name: Requesting {{ total_hosts }} from instackenv {{ instackenv_nodes }} nodes
+  fail:
+    msg: "The number of nodes requested {{ total_hosts }} is more hosts in instackenv file {{ instackenv_nodes }}."
+  when: total_hosts|int > instackenv_nodes|int
+
+- name: Get the cloud_title from instackenv url
+  set_fact:
+    # Example: http://quads.scalelab.redhat.com/cloud/cloud08_instackenv.json
+    cloud_title: "{{ instackenv_json|regex_replace('.*/([a-zA-Z0-9]+)_instackenv.json', '\\1') }}"
 
 - name: Set Machine to rebuild
   delegate_to: localhost

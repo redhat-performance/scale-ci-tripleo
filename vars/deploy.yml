@@ -38,8 +38,6 @@ node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"
 ####################################################################################################
 instackenv_json: "{{ lookup('env', 'OSP_INSTACKENV_JSON') }}"
 
-cloud_title: "{{ lookup('env', 'OSP_CLOUD_TITLE') }}"
-
 # Defaults for SLC1 (16 Nodes)
 controller_type: "{{ lookup('env', 'OSP_CONTROLLER_TYPE')|default('1029p', true) }}"
 cephstorage_type: "{{ lookup('env', 'OSP_CEPHSTORAGE_TYPE')|default('1029p', true) }}"
@@ -50,7 +48,7 @@ num_storage: "{{ lookup('env', 'OSP_NUM_CEPHSTORAGE')|default(3, true) }}"
 num_compute: "{{ lookup('env', 'OSP_NUM_COMPUTE')|default(9, true) }}"
 
 # Must be >= total number of hosts used for undercloud tuning
-total_hosts: "{{ num_compute | int + num_storage | int }}"
+total_hosts: "{{ num_controllers|int + num_compute|int + num_storage|int }}"
 
 openstack_deployment_hosts:
   - host_type:

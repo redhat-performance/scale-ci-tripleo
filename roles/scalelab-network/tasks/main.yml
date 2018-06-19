@@ -1,8 +1,8 @@
 ---
 # Create a basic network environment for the tenant with the DNS set.
 - name: Create public network
-  shell: "source /home/stack/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment {{ external_vlan }} public"
+  shell: "source /home/stack/overcloudrc; openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment {{ external_vlan }} public --format json"
 
 # Create a subnet of floating IPs with start, end, gateway and range from variables.
 - name: Create a public subnet floating ip pool
-  shell: "source /home/stack/overcloudrc; openstack subnet create --allocation-pool start={{fip_pool_start}},end={{fip_pool_end}} --gateway={{external_network_gateway}} --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range {{external_network_cidr}} public_subnet"
+  shell: "source /home/stack/overcloudrc; openstack subnet create --allocation-pool start={{fip_pool_start}},end={{fip_pool_end}} --gateway={{external_network_gateway}} --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range {{external_network_cidr}} public_subnet --format json"
