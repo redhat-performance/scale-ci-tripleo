@@ -95,7 +95,7 @@
     #- OS::TripleO::Services::GnocchiStatsd
     - OS::TripleO::Services::ManilaApi
     - OS::TripleO::Services::ManilaScheduler
-    # - OS::TripleO::Services::ManilaBackendGeneric
+    #- OS::TripleO::Services::ManilaBackendGeneric
     - OS::TripleO::Services::ManilaBackendNetapp
     - OS::TripleO::Services::ManilaBackendCephFs
     - OS::TripleO::Services::ManilaShare
@@ -130,9 +130,9 @@
     - OS::TripleO::Services::OctaviaHousekeeping
     - OS::TripleO::Services::OctaviaWorker
 
-- name: P1029Compute
-  CountDefault: 0
-  HostnameFormatDefault: '%stackname%-1029pcompute-%index%'
+- name: Compute
+  CountDefault: 1
+  HostnameFormatDefault: '%stackname%-compute-%index%'
   disable_upgrade_deployment: True
   ServicesDefault:
     - OS::TripleO::Services::CACerts
@@ -147,7 +147,7 @@
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::ComputeNeutronCorePlugin
     - OS::TripleO::Services::ComputeNeutronOvsAgent
-    - OS::TripleO::Services::ComputeCeilometerAgent
+    #- OS::TripleO::Services::ComputeCeilometerAgent
     - OS::TripleO::Services::ComputeNeutronL3Agent
     - OS::TripleO::Services::ComputeNeutronMetadataAgent
     - OS::TripleO::Services::TripleoPackages
