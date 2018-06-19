@@ -3,7 +3,7 @@ parameter_defaults:
     - vendor_id: "144d"
       product_id: "a804"
       device_type: "type-PCI"
-  1029PComputeExtraConfig:
+  ComputeExtraConfig:
     nova::pci::aliases:
        - name: 'nvme'
          product_id: 'a804'

@@ -12,9 +12,9 @@ parameters:
       Example: "intel_iommu=on"
     type: string
     default: ""
-  ComputeHostnameFormat:
+  ComputePassthroughHostnameFormat:
     type: string
-    default: ""
+    default: "compute"
 
 resources:
   userdata:
@@ -32,7 +32,7 @@ resources:
           template: |
             #!/bin/bash
             set -x
-            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            FORMAT=$COMPUTE_PASSTHROUGH_HOSTNAME_FORMAT
             if [[ $(hostname) == *$FORMAT* ]] ; then
               sed "s/^\(GRUB_CMDLINE_LINUX=\".*\)\"/\1 $KERNEL_ARGS\"/g" -i /etc/default/grub ;
               grub2-mkconfig -o /etc/grub2.cfg
@@ -67,7 +67,7 @@ resources:
             fi
           params:
             $KERNEL_ARGS: {get_param: ComputeKernelArgs}
-            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+            $COMPUTE_PASSTHROUGH_HOSTNAME_FORMAT: {get_param: ComputePassthroughHostnameFormat}
 
 outputs:
   # This means get_resource from the parent template will get the userdata, see:
