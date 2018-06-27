@@ -2,9 +2,18 @@
 
 Playbook to deploy Tripleo OpenStack on ScaleLab for OpenShift on OpenStack performance and scale testing.
 
-## Deploy-scalelab.yaml
+## Deploying Undercloud and Overcloud
 
-If as a Jenkins Job, define the following parameters:
+From CLI
+
+```
+$ cp hosts.example hosts
+$ # Add Undercloud host to hosts
+$ # Edit vars in vars/deploy.yml or define Environment vars
+$ ansible-playbook -i hosts deploy-scalelab.yaml
+```
+
+If using environment variables (Ex Jenkins Job Parameters), define the following:
 
 ```
 #

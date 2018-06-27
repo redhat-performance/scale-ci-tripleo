@@ -71,9 +71,11 @@ local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('en
 ntp_server: "{{ lookup('env', 'OSP_NTP_SERVER') }}"
 
 # External Network Setup:
-# 0 - private external network (Unlimited private floating ips)
-# 1 - public external network (Limited public floating ips)
-external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('0', true) }}"
+# 11_private - OSP11 private external network (Unlimited private floating ips)
+# 11_public - OSP11 public external network (Limited public floating ips)
+# 13_private - OSP13 private external network (Unlimited private floating ips)
+# 13_public - OSP13 public external network (Limited public floating ips)
+external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('11_private', true) }}"
 
 # Settings for both Network Setups
 dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"

@@ -96,8 +96,10 @@
     - /home/stack/templates/environments
     - /home/stack/templates/firstboot
     - /home/stack/templates/nic-configs
-    - /home/stack/templates/nic-configs/0
-    - /home/stack/templates/nic-configs/1
+    - /home/stack/templates/nic-configs/11/private
+    - /home/stack/templates/nic-configs/11/public
+    - /home/stack/templates/nic-configs/13/private
+    - /home/stack/templates/nic-configs/13/public
     - /home/stack/alderaan-deploy
     - /home/stack/alderaan-deploy/log
     - "{{log_dir}}"
@@ -124,23 +126,23 @@
     owner: stack
     group: stack
 
-- name: Deploy private external vlan interface (external_network_setup = 0 only)
+- name: Deploy private external vlan interface (external_network_setup = 11_private or 13_private)
   template:
     src: templates/ifcfg-vlan.j2
     dest: "/etc/sysconfig/network-scripts/ifcfg-{{undercloud_external_vlan_device}}"
     owner: root
     group: root
-  when: external_network_setup == "0"
+  when: external_network_setup == "11_private" or external_network_setup == "13_private"
 
-- name: Turn on private external vlan interface (external_network_setup = 0 only)
+- name: Turn on private external vlan interface (external_network_setup = 11_private or 13_private)
   shell: ifup {{undercloud_external_vlan_device}}
-  when: external_network_setup == "0"
+  when: external_network_setup == "11_private" or external_network_setup == "13_private"
 
-- name: Setup traffic fowarding for private external network (external_network_setup = 0 only)
+- name: Setup traffic fowarding for private external network (external_network_setup = 11_private or 13_private)
   shell: |
      echo 1 > /proc/sys/net/ipv4/ip_forward
      iptables -t nat -A POSTROUTING -o {{undercloud_public_interface}} -j MASQUERADE
      iptables -A FORWARD -i {{undercloud_public_interface}} -o {{undercloud_external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
      iptables -A FORWARD -i {{undercloud_external_vlan_device}} -o {{undercloud_public_interface}} -j ACCEPT
      iptables-save > /etc/sysconfig/iptables
-  when: external_network_setup == "0"
+  when: external_network_setup == "11_private" or external_network_setup == "13_private"
