@@ -27,8 +27,6 @@
       dest: /home/stack/templates/firstboot/first-boot.yaml
     - src: files/roles_data-notelem.yaml
       dest: /home/stack/templates/roles_data-notelem.yaml
-    - src: files/scheduler-hints.yaml
-      dest: /home/stack/templates/scheduler-hints.yaml
 
     # Private External Nic-config "templates"
     - src: files/nic-configs/private/1029p-cephstorage.yaml
@@ -60,6 +58,8 @@
       dest: /home/stack/templates/deploy.yaml
     - src: templates/network-environment.yaml.j2
       dest: /home/stack/templates/network-environment.yaml
+    - src: templates/scheduler-hints.yaml.j2
+      dest: /home/stack/templates/scheduler-hints.yaml
 
 - name: Place version metadata json file in /etc
   become: true

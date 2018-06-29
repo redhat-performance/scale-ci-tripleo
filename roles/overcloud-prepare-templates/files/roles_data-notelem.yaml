@@ -132,7 +132,6 @@
 
 - name: Compute
   CountDefault: 1
-  HostnameFormatDefault: '%stackname%-compute-%index%'
   disable_upgrade_deployment: True
   ServicesDefault:
     - OS::TripleO::Services::CACerts
