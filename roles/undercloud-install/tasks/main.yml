@@ -22,14 +22,14 @@
       with_items:
         - /etc/httpd/conf.d/10-keystone_wsgi_admin.conf
         - /etc/httpd/conf.d/10-keystone_wsgi_main.conf
-      when: version == 11
+      when: version == '11'
 
     - name: OSP11/Ocata - Restart httpd hosting Keystone
       become: true
       service:
         name: httpd
         state: restarted
-      when: version == 11
+      when: version == '11'
 
     - name: Install ipa and overcloud images
       become: true

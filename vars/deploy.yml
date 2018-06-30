@@ -5,7 +5,7 @@
 rhos_release_rpm: "{{ lookup('env', 'OSP_RHOS_RELEASE_URL') }}"
 
 # OSP/OSPd versioning and build
-version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default(11, true) }}"
+version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default('11', true) }}"
 rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default(7.4, true) }}"
 rhos_release: "{{ lookup('env', 'OSP_RHOS_RELEASE_VERSION')|default('11-director', true) }}"
 build: "{{ lookup('env', 'OSP_RHOS_BUILD')|default('z4', true) }}"
@@ -52,7 +52,7 @@ total_hosts: "{{ num_controllers|int + num_compute|int + num_storage|int }}"
 
 openstack_deployment_hosts:
   - host_type:
-      pin: compute
+      pin: novacompute
       title: Compute
       hint: "{{compute_type}}"
       count: "{{num_compute}}"
