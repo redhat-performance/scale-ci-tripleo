@@ -24,6 +24,15 @@
         version: master
         force: true
 
+    - name: Create Browbeat Virtual Environment
+      command: virtualenv /home/stack/browbeat/.browbeat-venv creates=/home/stack/browbeat/.browbeat-venv
+
+    - name: Install GrafYaml for Browbeat Grafana Dashboards
+      pip:
+        name: grafyaml
+        version: 0.0.7
+        virtualenv: /home/stack/browbeat/.browbeat-venv
+
     - name: Generate tripleo hosts and ssh-config
       shell: |
         cd /home/stack/browbeat/ansible
@@ -52,6 +61,20 @@
         name: sshd
         state: reloaded
       become: true
+
+    - name: Install Browbeat Dashboards Block
+      block:
+        - name: Install Browbeat Dashboards
+          shell: |
+            set -o pipefail
+            cd /home/stack/browbeat/ansible
+            { time  ansible-playbook -i hosts install/grafana-dashboards.yml -e 'upload_general=false upload_static=false upload_templated=false' 2>&1 | tee -a /home/stack/alderaan-deploy/log/browbeat/grafana-dashboards.log ; } 2>> /home/stack/alderaan-deploy/log/browbeat/grafana-dashboards.log
+      always:
+        - name: Collect Install Browbeat Dashboards Artifacts
+          synchronize:
+            src: /home/stack/alderaan-deploy/log/browbeat
+            dest: artifacts
+            mode: pull
 
     - name: Install Browbeat collectd Block
       block:
