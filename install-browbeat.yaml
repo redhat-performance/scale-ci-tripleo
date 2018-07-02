@@ -37,7 +37,7 @@
       shell: |
         cd /home/stack/browbeat/ansible
         . /home/stack/stackrc
-        /home/stack/browbeat/ansible/generate_tripleo_hostfile.sh -l
+        /home/stack/browbeat/ansible/bootstrap.py tripleo
 
     - name: Configure Browbeat Monitoring
       lineinfile:
