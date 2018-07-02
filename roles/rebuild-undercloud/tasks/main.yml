@@ -13,6 +13,11 @@
     msg: "The number of nodes requested {{ total_hosts }} is more hosts in instackenv file {{ instackenv_nodes }}."
   when: total_hosts|int > instackenv_nodes|int
 
+- name: Check selected nic-config setup
+  fail:
+    msg: "Select a nic-config setup from {{overcloud_nic_config_map.keys()}}"
+  when: external_network_setup not in overcloud_nic_config_map
+
 - name: Get the cloud_title from instackenv url
   set_fact:
     # Example: http://quads.scalelab.redhat.com/cloud/cloud08_instackenv.json

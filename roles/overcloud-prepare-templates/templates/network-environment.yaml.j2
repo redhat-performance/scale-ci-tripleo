@@ -1,7 +1,7 @@
 resource_registry:
-  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/{{controller_type}}-controller.yaml
-  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/{{cephstorage_type}}-cephstorage.yaml
-  OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{external_network_setup}}/{{compute_type}}-compute.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{overcloud_nic_config_map[external_network_setup]}}/{{controller_type}}-controller.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{overcloud_nic_config_map[external_network_setup]}}/{{cephstorage_type}}-cephstorage.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/{{overcloud_nic_config_map[external_network_setup]}}/{{compute_type}}-compute.yaml
 
 parameter_defaults:
   NeutronExternalNetworkBridge: "''"
