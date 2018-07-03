@@ -37,6 +37,8 @@
       shell: |
         cd /home/stack/browbeat/ansible
         . /home/stack/stackrc
+        cat /home/stack/.ssh/id_rsa.pub >> /home/stack/.ssh/authorized_keys
+        chmod 0600 /home/stack/.ssh/authorized_keys
         /home/stack/browbeat/ansible/bootstrap.py tripleo
 
     - name: Configure Browbeat Monitoring
