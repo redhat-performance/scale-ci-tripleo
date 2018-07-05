@@ -31,3 +31,11 @@
     dest: /etc/version.json
     owner: stack
     group: stack
+
+- name: Render the network setup script
+  template:
+    src: templates/create_public_cluster_network.sh.j2
+    dest: /home/stack/alderaan-deploy/create_public_cluster_network.sh
+    mode: 0755
+    owner: stack
+    group: stack
