@@ -12,6 +12,7 @@
     - vars/data.yml
     - vars/deploy.yml
   roles:
+    - validate_vars
     - rebuild-undercloud
 
 - name: Run initial setup tasks
