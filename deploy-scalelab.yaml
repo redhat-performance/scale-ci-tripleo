@@ -52,6 +52,7 @@
     - vars/deploy.yml
   roles:
     - undercloud-install
+    - undercloud-introspection
     - overcloud-prepare-templates
     - overcloud-deploy
     - scalelab-network
