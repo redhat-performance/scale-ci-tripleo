@@ -107,6 +107,11 @@
 - name: Install tripleo
   yum: name=python-tripleoclient
 
+- name: Install ceph-ansible
+  yum:
+    name: ceph-ansible
+  when: version == "13"
+
 - name: Set hostname
   shell: hostnamectl set-hostname {{ansible_fqdn}}
 
