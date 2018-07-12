@@ -33,6 +33,8 @@ overcloud_templates:
       dest: /home/stack/templates/firstboot/first-boot.yaml
     - src: files/roles_data-notelem.yaml
       dest: /home/stack/templates/roles_data-notelem.yaml
+    - src: files/neutron-firewall.yaml
+      dest: /home/stack/templates/environments/neutron-firewall.yaml
 
     # OSP11 Private External Nic-config "templates"
     - src: files/nic-configs/11/private/1029p-cephstorage.yaml
