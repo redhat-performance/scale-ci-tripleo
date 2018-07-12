@@ -1,6 +1,10 @@
 ---
 # Vars that do not require much (if any) adjustment
 
+installable_osp_versions:
+  - "11"
+  - "13"
+
 overcloud_image_password: debug
 
 overcloud_nic_config_map:
