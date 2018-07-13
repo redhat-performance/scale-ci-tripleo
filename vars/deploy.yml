@@ -25,10 +25,11 @@ stack_password: "{{ lookup('env', 'OSP_STACK_PASSWORD') }}"
 # No introspection at all - adjusts instackenv to not require introspection
 instackenv_no_introspection: "{{ lookup('env', 'OSP_INSTACKENV_NO_INTROSPECTION')|default(false, true) }}"
 node_provide_timeout: "{{ lookup('env', 'OSP_NODE_PROVIDE_TIMEOUT')|default(1800, true) }}"
-# bulk introspection
-introspection: "{{ lookup('env', 'OSP_BULK_INTROSPECTION')|default(false, true) }}"
-# Introspection Script (Disable bulk if using)
-introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(true, true) }}"
+# Introspection (Uses Bulk introspection by default)
+introspection: "{{ lookup('env', 'OSP_INTROSPECTION')|default(true, true) }}"
+bulk_introspection_timeout: "{{ lookup('env', 'OSP_BULK_INTROSPECTION_TIMEOUT')|default(3600, true) }}"
+# Introspection Script (Enable to use Script rather than Bulk introspection)
+introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(false, true) }}"
 
 # Ironic automated cleaning (Use when introspection script is disabled)
 node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"

@@ -14,17 +14,6 @@ set -eux
 
 source /home/stack/stackrc
 
-{% if introspection|bool %}
-
-## * Introspect hardware attributes of nodes.
-## ::
-
-openstack baremetal introspection bulk start
-
-{% endif %}
-
-{% if introspect_with_retry|bool %}
-
 ## * Perform introspected check on nodes in manageable state.
 ##   Return 0 if all the nodes were introspected, 1 otherwise.
 ##   Set the nodes that have been introspected as available.
@@ -164,7 +153,5 @@ for node in `openstack baremetal node list -f json | jq -r '.[]| select(.["Provi
 done
 
 introspect 15m || introspect 15m || introspect 15m
-
-{% endif %}
 
 ### --stop_docs
