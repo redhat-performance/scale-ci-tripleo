@@ -84,25 +84,25 @@
     - OS::TripleO::Services::Snmp
     - OS::TripleO::Services::Sshd
     - OS::TripleO::Services::Timezone
-    #- OS::TripleO::Services::CeilometerApi
-    #- OS::TripleO::Services::CeilometerCollector
-    #- OS::TripleO::Services::CeilometerExpirer
-    #- OS::TripleO::Services::CeilometerAgentCentral
-    #- OS::TripleO::Services::CeilometerAgentNotification
+    - OS::TripleO::Services::CeilometerApi
+    - OS::TripleO::Services::CeilometerCollector
+    - OS::TripleO::Services::CeilometerExpirer
+    - OS::TripleO::Services::CeilometerAgentCentral
+    - OS::TripleO::Services::CeilometerAgentNotification
     - OS::TripleO::Services::Horizon
-    #- OS::TripleO::Services::GnocchiApi
-    #- OS::TripleO::Services::GnocchiMetricd
-    #- OS::TripleO::Services::GnocchiStatsd
+    - OS::TripleO::Services::GnocchiApi
+    - OS::TripleO::Services::GnocchiMetricd
+    - OS::TripleO::Services::GnocchiStatsd
     - OS::TripleO::Services::ManilaApi
     - OS::TripleO::Services::ManilaScheduler
-    #- OS::TripleO::Services::ManilaBackendGeneric
+    - OS::TripleO::Services::ManilaBackendGeneric
     - OS::TripleO::Services::ManilaBackendNetapp
     - OS::TripleO::Services::ManilaBackendCephFs
     - OS::TripleO::Services::ManilaShare
-    #- OS::TripleO::Services::AodhApi
-    #- OS::TripleO::Services::AodhEvaluator
-    #- OS::TripleO::Services::AodhNotifier
-    #- OS::TripleO::Services::AodhListener
+    - OS::TripleO::Services::AodhApi
+    - OS::TripleO::Services::AodhEvaluator
+    - OS::TripleO::Services::AodhNotifier
+    - OS::TripleO::Services::AodhListener
     - OS::TripleO::Services::SaharaApi
     - OS::TripleO::Services::SaharaEngine
     - OS::TripleO::Services::IronicApi
@@ -116,7 +116,7 @@
     - OS::TripleO::Services::FluentdClient
     - OS::TripleO::Services::Collectd
     - OS::TripleO::Services::BarbicanApi
-    #- OS::TripleO::Services::PankoApi
+    - OS::TripleO::Services::PankoApi
     - OS::TripleO::Services::Tacker
     - OS::TripleO::Services::Zaqar
     - OS::TripleO::Services::OVNDBs
@@ -146,7 +146,7 @@
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::ComputeNeutronCorePlugin
     - OS::TripleO::Services::ComputeNeutronOvsAgent
-    #- OS::TripleO::Services::ComputeCeilometerAgent
+    - OS::TripleO::Services::ComputeCeilometerAgent
     - OS::TripleO::Services::ComputeNeutronL3Agent
     - OS::TripleO::Services::ComputeNeutronMetadataAgent
     - OS::TripleO::Services::TripleoPackages

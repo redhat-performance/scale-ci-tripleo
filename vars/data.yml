@@ -25,14 +25,12 @@ overcloud_templates:
       dest: /home/stack/templates/environments/compute-params.yaml
     - src: files/controller-params.yaml
       dest: /home/stack/templates/environments/controller-params.yaml
-    - src: files/disable-notifications.yaml
-      dest: /home/stack/templates/disable-notifications.yaml
     - src: files/firstboot-env.yaml
       dest: /home/stack/templates/environments/firstboot-env.yaml
     - src: files/first-boot.yaml
       dest: /home/stack/templates/firstboot/first-boot.yaml
-    - src: files/roles_data-notelem.yaml
-      dest: /home/stack/templates/roles_data-notelem.yaml
+    - src: files/roles_data.yaml
+      dest: /home/stack/templates/roles_data.yaml
 
     # OSP11 Private External Nic-config "templates"
     - src: files/nic-configs/11/private/1029p-cephstorage.yaml
