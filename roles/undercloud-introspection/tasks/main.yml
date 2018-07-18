@@ -24,17 +24,24 @@
     cat /home/stack/instackenv.json | jq  '{ nodes: [ .nodes[] | .cpu="4" | .memory="60000" | .disk="50" |  .  ]}' > /home/stack/intermediate.json
     python -m json.tool /home/stack/intermediate.json /home/stack/instackenv.json
     rm -f /home/stack/intermediate.json
-  when: instackenv_no_introspection
+  when: instackenv_no_introspection|bool
 
 - name: Import instackenv.json
   shell: |
     . /home/stack/stackrc
-    openstack baremetal import --json /home/stack/instackenv.json
+    openstack overcloud node import /home/stack/instackenv.json
 
-- name: Configure boot
+- name: OSP11 Configure boot
   shell: |
     . /home/stack/stackrc
     openstack baremetal configure boot
+  when: version == '11'
+
+- name: OSP13 Configure boot
+  shell: |
+    . /home/stack/stackrc
+    openstack overcloud node configure --all-manageable
+  when: version == '13'
 
 - name: Copy introspection script to Undercloud
   copy:
@@ -45,7 +52,7 @@
     mode: 0744
 
 - name: No Introspection node provide Block
-  when: instackenv_no_introspection
+  when: instackenv_no_introspection|bool
   block:
     - name: Set Nodes to provide
       shell: |
@@ -65,8 +72,8 @@
 
 - name: Bulk Introspection Block
   when:
-    - introspection
-    - not introspect_with_retry
+    - introspection|bool
+    - not introspect_with_retry|bool
   block:
     - name: Run bulk introspection
       shell:  |
@@ -90,8 +97,8 @@
 
 - name: Introspection Script Block
   when:
-    - introspection
-    - introspect_with_retry
+    - introspection|bool
+    - introspect_with_retry|bool
   block:
     - name: Run introspection with retry script
       shell: |
@@ -114,8 +121,8 @@
 
 - name: Introspection-data Block
   when:
-    - instackenv_no_introspection == false
-    - introspection
+    - not instackenv_no_introspection|bool
+    - introspection|bool
   block:
     - name: Generate introspection-data
       shell: |
