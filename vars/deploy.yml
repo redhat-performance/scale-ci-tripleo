@@ -5,10 +5,19 @@
 rhos_release_rpm: "{{ lookup('env', 'OSP_RHOS_RELEASE_URL') }}"
 
 # OSP/OSPd versioning and build
-version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default('11', true) }}"
-rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default(7.4, true) }}"
-rhos_release: "{{ lookup('env', 'OSP_RHOS_RELEASE_VERSION')|default('11-director', true) }}"
-build: "{{ lookup('env', 'OSP_RHOS_BUILD')|default('z4', true) }}"
+version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default('13', true) }}"
+rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default('7.5', true) }}"
+rhos_release: "{{ lookup('env', 'OSP_RHOS_RELEASE_VERSION')|default('13-director', true) }}"
+build: "{{ lookup('env', 'OSP_RHOS_BUILD')|default('ga', true) }}"
+
+# OSP13 only:
+additional_insecure_registry: "{{ lookup('env', 'OSP_INSECURE_REGISTRY')|default('', true) }}"
+additional_ceph_insecure_registry: "{{ lookup('env', 'OSP_CEPH_INSECURE_REGISTRY')|default('', true) }}"
+container_namespace: "{{ lookup('env', 'OSP_CONTAINER_NAMESPACE')|default('/rhosp13', true) }}"
+container_tag: "{{ lookup('env', 'OSP_CONTAINER_TAG')|default('2018-06-21.2', true) }}"
+container_ceph_namespace: "{{ lookup('env', 'OSP_CONTAINER_CEPH_NAMESPACE')|default('', true) }}"
+container_ceph_image: "{{ lookup('env', 'OSP_CONTAINER_CEPH_IMAGE')|default('rhceph', true) }}"
+container_ceph_tag: "{{ lookup('env', 'OSP_CONTAINER_CEPH_TAG')|default('3-9', true) }}"
 
 ####################################################################################################
 # Undercloud Variables
@@ -25,10 +34,11 @@ stack_password: "{{ lookup('env', 'OSP_STACK_PASSWORD') }}"
 # No introspection at all - adjusts instackenv to not require introspection
 instackenv_no_introspection: "{{ lookup('env', 'OSP_INSTACKENV_NO_INTROSPECTION')|default(false, true) }}"
 node_provide_timeout: "{{ lookup('env', 'OSP_NODE_PROVIDE_TIMEOUT')|default(1800, true) }}"
-# bulk introspection
-introspection: "{{ lookup('env', 'OSP_BULK_INTROSPECTION')|default(false, true) }}"
-# Introspection Script (Disable bulk if using)
-introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(true, true) }}"
+# Introspection (Uses Bulk introspection by default)
+introspection: "{{ lookup('env', 'OSP_INTROSPECTION')|default(true, true) }}"
+bulk_introspection_timeout: "{{ lookup('env', 'OSP_BULK_INTROSPECTION_TIMEOUT')|default(3600, true) }}"
+# Introspection Script (Enable to use Script rather than Bulk introspection)
+introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(false, true) }}"
 
 # Ironic automated cleaning (Use when introspection script is disabled)
 node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"

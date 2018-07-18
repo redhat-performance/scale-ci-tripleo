@@ -1,28 +1,22 @@
 ---
 # tasks file for overcloud-prepare-templates
 
-- name: Copy Alderaan THT Files into templates directory
+- name: Copy THT Files into stack user templates directory
   copy:
     src: "{{item.src}}"
     dest: "{{item.dest}}"
     owner: stack
     group: stack
     mode: "{{item.mode | default('0644')}}"
-  with_items: "{{overcloud_templates}}"
+  with_items: "{{overcloud_tht_files}}"
 
-- name: Copy Alderaan THT Templates into templates directory
+- name: Render templatized THT into stack user templates directory
   template:
     src: "{{item.src}}"
     dest: "{{item.dest}}"
     owner: stack
     group: stack
-  with_items:
-    - src: templates/deploy.yaml.j2
-      dest: /home/stack/templates/deploy.yaml
-    - src: templates/network-environment.yaml.j2
-      dest: /home/stack/templates/network-environment.yaml
-    - src: templates/scheduler-hints.yaml.j2
-      dest: /home/stack/templates/scheduler-hints.yaml
+  with_items: "{{overcloud_tht_templates}}"
 
 - name: Place version metadata json file in /etc
   become: true

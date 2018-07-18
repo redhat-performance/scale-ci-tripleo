@@ -13,12 +13,8 @@ overcloud_nic_config_map:
   13_private: "13/private"
   13_public: "13/public"
 
-# List of overcloud templates to be copied to Undercloud
-overcloud_templates:
-    - src: files/1029p-storage-environment.yaml
-      dest: /home/stack/templates/1029p-storage-environment.yaml
-    - src: files/1029u-storage-environment.yaml
-      dest: /home/stack/templates/1029u-storage-environment.yaml
+# List of Overcloud THT Files to be copied to Undercloud
+overcloud_tht_files:
     - src: files/args.yaml
       dest: /home/stack/templates/environments/args.yaml
     - src: files/compute-params.yaml
@@ -73,3 +69,17 @@ overcloud_templates:
       dest: /home/stack/templates/nic-configs/13/public/1029p-controller.yaml
     - src: files/nic-configs/13/public/1029u-cephstorage.yaml
       dest: /home/stack/templates/nic-configs/13/public/1029u-cephstorage.yaml
+
+# List of Overcloud THT Templates to be rendered to Undercloud
+# Typically this are version specific or have other vars
+overcloud_tht_templates:
+    - src: templates/deploy.yaml.j2
+      dest: /home/stack/templates/deploy.yaml
+    - src: templates/network-environment.yaml.j2
+      dest: /home/stack/templates/network-environment.yaml
+    - src: templates/scheduler-hints.yaml.j2
+      dest: /home/stack/templates/scheduler-hints.yaml
+    - src: templates/1029p-storage-environment.yaml.j2
+      dest: /home/stack/templates/1029p-storage-environment.yaml
+    - src: templates/1029u-storage-environment.yaml.j2
+      dest: /home/stack/templates/1029u-storage-environment.yaml
