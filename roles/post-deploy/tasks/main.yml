@@ -1,0 +1,33 @@
+---
+# Tasks to run after OpenStack has finished deploying.
+
+- name: Create a network and subnet with DNS
+  shell: ". /home/stack/overcloudrc; /home/stack/alderaan-deploy/create_public_cluster_network.sh"
+
+- name: Getting the list of servers from OpenStack
+  shell: ". /home/stack/stackrc; server list --format value -c Name -c Networks --limit -1"
+  # Example output: overcloud-compute-15 ctlplane=192.168.10.2
+  register: name_networks
+  changed_when: false
+
+- name: Creating an ssh command that will use {{ inventory_hostname }} as a proxy
+  set_fact:
+    # The key path must be from the remote host not the openstack-server.
+    proxy_command: "ssh -i {{ ansible_private_key_file }} -W %h:%p {{ ansible_user }}@{{ inventory_hostname }}"
+
+- name: Adding the OpenStack servers to the in-memory inventory with groups
+  add_host:
+    name: "{{ item.split('=')[1] }}"
+    groups: [ "{{ item.split('-')[1].split('-')[0] }}" ]
+    ansible_user: heat-admin
+    # Adding a ProxyCommand allows ansbile to contact this IP using the openstack-server.
+    ansible_ssh_common_args: "-o ProxyCommand='{{ proxy_command }}'"
+  with_items: "{{ name_networks.stdout_lines }}"
+
+- name: Set the ceph values on the controller server
+  shell: |
+    ceph osd pool set {{ item.pool_name }} pg_num {{ item.pg_num }}
+    ceph osd pool set {{ item.pool_name }} pgp_num {{ item.pg_num }}
+  with_items: "{{ ceph_pools }}"
+  become: true
+  delegate_to: "{{ groups.controller[0] }}"
