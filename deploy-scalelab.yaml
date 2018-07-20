@@ -56,4 +56,4 @@
     - undercloud-introspection
     - overcloud-prepare-templates
     - overcloud-deploy
-    - scalelab-network
+    - post-deploy

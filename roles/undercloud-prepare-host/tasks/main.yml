@@ -67,6 +67,30 @@
 - name: Add stack user
   user: name=stack
 
+- name: Creating the /home/stack/.ssh directory on the server
+  file:
+    path: "/home/stack/.ssh"
+    state: directory
+    mode: 0700
+    owner: stack
+    group: stack
+
+- name: Copying the private key to the server
+  copy:
+    src: "{{ ansible_private_key_file }}"
+    dest: "/home/stack/.ssh/id_rsa"
+    mode: 0600
+    owner: stack
+    group: stack
+
+- name: Copying the public key to the server
+  copy:
+    src: "{{ ansible_public_key_file }}"
+    dest: "/home/stack/.ssh/id_rsa.pub"
+    mode: 0644
+    owner: stack
+    group: stack
+
 # Not entirely sure why the password wouldn't take with the initial command
 - name: Stack user password
   user:
@@ -82,7 +106,7 @@
 - name: Setup authorized key upload
   authorized_key:
     user: stack
-    key: "{{ lookup('file', lookup('env','PUBLIC_KEY')| default('~/.ssh/id_rsa.pub', true)) }}"
+    key: "{{ lookup('file', ansible_public_key_file) }}"
 
 - name: Setup tripleo directories
   file:

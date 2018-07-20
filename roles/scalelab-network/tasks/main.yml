@@ -1,4 +1,0 @@
----
-# Create a basic network environment for the tenant with the DNS set.
-- name: Create network and subnet for the tenant
-  shell: ". /home/stack/overcloudrc; /home/stack/alderaan-deploy/create_public_cluster_network.sh"

@@ -1,4 +1,9 @@
 ---
+# The path to the public key to use in this automation.
+ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')|default('~/.ssh/id_rsa.pub', true) }}"
+# The path to the private key to access servers using the keypair.
+ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rsa', true) }}"
+
 ####################################################################################################
 # OpenStack Version/Build Variables
 ####################################################################################################
@@ -18,6 +23,15 @@ container_tag: "{{ lookup('env', 'OSP_CONTAINER_TAG')|default('2018-06-21.2', tr
 container_ceph_namespace: "{{ lookup('env', 'OSP_CONTAINER_CEPH_NAMESPACE')|default('', true) }}"
 container_ceph_image: "{{ lookup('env', 'OSP_CONTAINER_CEPH_IMAGE')|default('rhceph', true) }}"
 container_ceph_tag: "{{ lookup('env', 'OSP_CONTAINER_CEPH_TAG')|default('3-9', true) }}"
+
+# The ceph pools pg values to adjust post-deploy.
+ceph_pools:
+  - pool_name: vms
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VM_PG_NUM')|default('512', true) }}"
+  - pool_name: images
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_IMAGES_PG_NUM')|default('128', true) }}"
+  - pool_name: volumes
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VOLUMES_PG_NUM')|default('128', true) }}"
 
 ####################################################################################################
 # Undercloud Variables
