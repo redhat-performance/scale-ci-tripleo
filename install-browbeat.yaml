@@ -29,14 +29,20 @@
 
     - name: Install GrafYaml for Browbeat Grafana Dashboards
       pip:
-        name: grafyaml
-        version: 0.0.7
+        name: "{{item.name}}"
+        version: "{{item.version}}"
         virtualenv: /home/stack/browbeat/.browbeat-venv
+      with_items:
+        - name: grafyaml
+          version: 0.0.7
+        - name: openstacksdk
+          version: 0.16.0
 
     - name: Generate tripleo hosts and ssh-config
       shell: |
         cd /home/stack/browbeat/ansible
         . /home/stack/stackrc
+        . /home/stack/browbeat/.browbeat-venv/bin/activate
         cat /home/stack/.ssh/id_rsa.pub >> /home/stack/.ssh/authorized_keys
         chmod 0600 /home/stack/.ssh/authorized_keys
         /home/stack/browbeat/ansible/bootstrap.py tripleo
