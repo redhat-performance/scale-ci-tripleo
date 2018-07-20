@@ -18,6 +18,7 @@ container_tag: "{{ lookup('env', 'OSP_CONTAINER_TAG')|default('2018-06-21.2', tr
 container_ceph_namespace: "{{ lookup('env', 'OSP_CONTAINER_CEPH_NAMESPACE')|default('', true) }}"
 container_ceph_image: "{{ lookup('env', 'OSP_CONTAINER_CEPH_IMAGE')|default('rhceph', true) }}"
 container_ceph_tag: "{{ lookup('env', 'OSP_CONTAINER_CEPH_TAG')|default('3-9', true) }}"
+firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
 
 ####################################################################################################
 # Undercloud Variables
