@@ -5,7 +5,7 @@
   shell: ". /home/stack/overcloudrc; /home/stack/alderaan-deploy/create_public_cluster_network.sh"
 
 - name: Getting the list of servers from OpenStack
-  shell: ". /home/stack/stackrc; server list --format value -c Name -c Networks --limit -1"
+  shell: ". /home/stack/stackrc; openstack server list --format value -c Name -c Networks --limit -1"
   # Example output: overcloud-compute-15 ctlplane=192.168.10.2
   register: name_networks
   changed_when: false
