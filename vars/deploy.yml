@@ -1,4 +1,9 @@
 ---
+# The path to the public key to use in this automation.
+ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')|default('~/.ssh/id_rsa.pub', true) }}"
+# The path to the private key to access servers using the keypair.
+ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rsa', true) }}"
+
 ####################################################################################################
 # OpenStack Version/Build Variables
 ####################################################################################################
@@ -73,6 +78,15 @@ openstack_deployment_hosts:
       hint: "{{cephstorage_type}}"
       count: "{{num_storage}}"
 
+# The ceph pools pg values to adjust post-deploy.
+ceph_pools:
+  - pool_name: vms
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VM_PG_NUM')|default('512', true) }}"
+  - pool_name: images
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_IMAGES_PG_NUM')|default('128', true) }}"
+  - pool_name: volumes
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VOLUMES_PG_NUM')|default('128', true) }}"
+
 ####################################################################################################
 # Undercloud and Overcloud Network Setup
 ####################################################################################################
@@ -101,12 +115,15 @@ external_network_vip: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_VIP')|default('172
 fip_pool_start: "{{ lookup('env', 'OSP_FIP_POOL_START')|default('172.21.1.1', true) }}"
 fip_pool_end: "{{ lookup('env', 'OSP_FIP_POOL_END')|default('172.21.255.254', true) }}"
 
-# Network Settings specific to Network setup 0 (private external)
+# Network settings specific to private external network setup
 undercloud_public_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_PUBLIC_INTERFACE')|default('eno1', true) }}"
 undercloud_external_vlan_device: "{{ lookup('env', 'OSP_UNDERCLOUD_PRIVATE_EXTERNAL_INTERFACE')|default('enp94s0f3', true) }}.{{external_vlan}}"
 
 private_external_address: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_ADDRESS')|default('172.21.0.1', true) }}"
 private_external_netmask: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_NETMASK')|default('255.255.0.0', true) }}"
 
-# Network Settings specific to Network setup 1 (public external)
+# Network settings specific to public external network setup
 # None for now
+
+# OpenStack Overcloud Neutron configuration
+firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
