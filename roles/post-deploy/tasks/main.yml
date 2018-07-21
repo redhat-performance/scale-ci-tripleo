@@ -4,16 +4,20 @@
 - name: Create a network and subnet with DNS
   shell: ". /home/stack/overcloudrc; /home/stack/alderaan-deploy/create_public_cluster_network.sh"
 
+# Following Ceph pg workaround is only required with OSP13
+# See BZ: https://bugzilla.redhat.com/show_bug.cgi?id=1578086#c22
 - name: Getting the list of servers from OpenStack
   shell: ". /home/stack/stackrc; openstack server list --format value -c Name -c Networks --limit -1"
   # Example output: overcloud-compute-15 ctlplane=192.168.10.2
   register: name_networks
   changed_when: false
+  when: version == '13'
 
 - name: Creating an ssh command that will use {{ inventory_hostname }} as a proxy
   set_fact:
     # The key path must be from the remote host not the openstack-server.
     proxy_command: "ssh -i {{ ansible_private_key_file }} -W %h:%p {{ ansible_user }}@{{ inventory_hostname }}"
+  when: version == '13'
 
 - name: Adding the OpenStack servers to the in-memory inventory with groups
   add_host:
@@ -23,6 +27,7 @@
     # Adding a ProxyCommand allows ansbile to contact this IP using the openstack-server.
     ansible_ssh_common_args: "-o ProxyCommand='{{ proxy_command }}'"
   with_items: "{{ name_networks.stdout_lines }}"
+  when: version == '13'
 
 - name: Set the ceph values on the controller server
   shell: |
@@ -31,3 +36,5 @@
   with_items: "{{ ceph_pools }}"
   become: true
   delegate_to: "{{ groups.controller[0] }}"
+  when: version == '13'
+# End Ceph pg workaround
