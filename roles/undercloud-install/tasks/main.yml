@@ -75,6 +75,7 @@
     neutron subnet-update {{neutron_subnet_uuid.stdout}} --dns-nameserver {{dns_server}}
 
 - name: Setup Container Registry Block
+  when: version == '13'
   block:
     - name: Append additional insecure registry to /etc/sysconfig/docker
       become: true
