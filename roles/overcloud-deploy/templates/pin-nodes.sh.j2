@@ -1,19 +1,7 @@
 #!/bin/bash
-{%if version == '13' %}
 
 set -eux
 /home/stack/alderaan-deploy/pin.py -n {{num_controllers}} -p controller --hint {{controller_type}} -c
 {% for node_type in openstack_deployment_hosts %}
 /home/stack/alderaan-deploy/pin.py -n {{node_type['host_type']['count']}} -p {{node_type['host_type']['pin']}} --hint {{node_type['host_type']['hint']}}
 {% endfor %}
-
-{% else %}
-
-source /home/stack/alderaan-deploy/ostag-venv/bin/activate
-set -eux
-ostag -n {{num_controllers}} -p controller --hint {{controller_type}} -c
-{% for node_type in openstack_deployment_hosts %}
-ostag -n {{node_type['host_type']['count']}} -p {{node_type['host_type']['pin']}} --hint {{node_type['host_type']['hint']}}
-{% endfor %}
-
-{% endif %}

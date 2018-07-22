@@ -1,29 +1,11 @@
 ---
 # tasks file for overcloud-deploy
 
-- name: OSP11 Install ostag
-  pip:
-    state: latest
-    virtualenv: /home/stack/alderaan-deploy/ostag-venv
-    name: "{{item}}"
-  with_items:
-    - pip
-    - git+https://github.com/redhat-performance/ostag#egg=ostag
-  when: version == '11'
-
-- name: OSP11 Fix os-client-config version for ostag
-  pip:
-    name: os-client-config
-    version: 1.29.0
-    virtualenv: /home/stack/alderaan-deploy/ostag-venv
-  when: version == '11'
-
-- name: OSP13 Copy pin python script to Undercloud
+- name: Copy pin python script to Undercloud
   copy:
     src: pin.py
     dest: /home/stack/alderaan-deploy/pin.py
     mode: 0744
-  when: version == '13'
 
 - name: Template the Pinning script
   template:
