@@ -38,3 +38,12 @@
   delegate_to: "{{ groups.controller[0] }}"
   when: version == '13'
 # End Ceph pg workaround
+
+# OSP13 Heat-api Workaround
+- name: Restart heat_api container on each Controller
+  shell: |
+    docker restart heat_api
+  become: true
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups.controller }}"
+  when: version == '13'
