@@ -1,0 +1,12 @@
+parameter_defaults:
+{% if firewall_driver == 'iptables_hybrid' %}
+  NeutronFirewallDriver: 'iptables_hybrid'
+  NeutronOVSFirewallDriver: 'iptables_hybrid'
+  #NeutronFirewallDriver: 'openvswitch'
+  #NeutronOVSFirewallDriver: 'openvswitch'
+{% elif firewall_driver == 'openvswitch' %}
+  #NeutronFirewallDriver: 'iptables_hybrid'
+  #NeutronOVSFirewallDriver: 'iptables_hybrid'
+  NeutronFirewallDriver: 'openvswitch'
+  NeutronOVSFirewallDriver: 'openvswitch'
+{% endif %}

@@ -54,6 +54,9 @@ node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"
 ####################################################################################################
 instackenv_json: "{{ lookup('env', 'OSP_INSTACKENV_JSON') }}"
 
+# OpenStack Overcloud Neutron configuration either: iptables_hybrid or openvswitch
+firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
+
 # Defaults for SLC1 (16 Nodes)
 controller_type: "{{ lookup('env', 'OSP_CONTROLLER_TYPE')|default('1029p', true) }}"
 cephstorage_type: "{{ lookup('env', 'OSP_CEPHSTORAGE_TYPE')|default('1029p', true) }}"
@@ -124,6 +127,3 @@ private_external_netmask: "{{ lookup('env', 'OSP_PRIVATE_EXTERNAL_NETMASK')|defa
 
 # Network settings specific to public external network setup
 # None for now
-
-# OpenStack Overcloud Neutron configuration
-firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
