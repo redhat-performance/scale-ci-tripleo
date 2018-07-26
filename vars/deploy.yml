@@ -27,6 +27,7 @@ container_ceph_tag: "{{ lookup('env', 'OSP_CONTAINER_CEPH_TAG')|default('3-9', t
 ####################################################################################################
 # Undercloud Variables
 ####################################################################################################
+clusterid: "{{ lookup('env', 'OSP_CLUSTER_ID')|default('alderaan', true)}}"
 rebuild_undercloud: "{{ lookup('env', 'OSP_REBUILD_UNDERCLOUD')|default(true, true) }}"
 undercloud_hostname: "{{ lookup('env', 'OSP_UNDERCLOUD_HOSTNAME') }}"
 ticket_number: "{{ lookup('env', 'OSP_QUADS_TICKET_NUMBER') }}"
