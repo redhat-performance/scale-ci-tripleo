@@ -17,6 +17,11 @@ If using environment variables (Ex Jenkins Job Parameters), define the following
 
 ```
 #
+# Ansible SSH Vars
+#
+PUBLIC_KEY
+PRIVATE_KEY
+#
 # OpenStack Version/Build Variables:
 #
 OSP_RHOS_RELEASE_URL
@@ -34,6 +39,7 @@ OSP_CONTAINER_CEPH_TAG
 #
 # Undercloud Variables:
 #
+OSP_CLUSTER_ID
 OSP_REBUILD_UNDERCLOUD
 OSP_UNDERCLOUD_HOSTNAME
 OSP_QUADS_TICKET_NUMBER
