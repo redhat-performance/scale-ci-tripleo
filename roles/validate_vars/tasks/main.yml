@@ -35,7 +35,7 @@
 
 - name: Check selected firewall driver - {{firewall_driver}}
   fail:
-    msg: "Select a firewall_driver setup from {{overcloud_firewall_drivers.keys()}}"
+    msg: "Select a firewall_driver setup from {{overcloud_firewall_drivers}}"
   when: firewall_driver not in overcloud_firewall_drivers
 
 - name: Get the cloud_title from instackenv url
