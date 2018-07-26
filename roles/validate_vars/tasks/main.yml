@@ -28,10 +28,15 @@
     msg: "The number of nodes requested {{ total_hosts }} is more hosts in instackenv file {{ instackenv_nodes }}."
   when: total_hosts|int > instackenv_nodes|int
 
-- name: Check selected nic-config setup
+- name: Check selected nic-config setup - {{external_network_setup}}
   fail:
     msg: "Select a nic-config setup from {{overcloud_nic_config_map.keys()}}"
   when: external_network_setup not in overcloud_nic_config_map
+
+- name: Check selected firewall driver - {{firewall_driver}}
+  fail:
+    msg: "Select a firewall_driver setup from {{overcloud_firewall_drivers.keys()}}"
+  when: firewall_driver not in overcloud_firewall_drivers
 
 - name: Get the cloud_title from instackenv url
   set_fact:

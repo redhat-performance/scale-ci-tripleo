@@ -7,6 +7,10 @@ installable_osp_versions:
 
 overcloud_image_password: debug
 
+overcloud_firewall_drivers:
+  - "iptables_hybrid"
+  - "openvswitch"
+
 overcloud_nic_config_map:
   11_private: "11/private"
   11_public: "11/public"
@@ -29,8 +33,8 @@ overcloud_tht_files:
       dest: /home/stack/templates/firstboot/first-boot.yaml
     - src: files/roles_data-notelem.yaml
       dest: /home/stack/templates/roles_data-notelem.yaml
-    - src: files/neutron-firewall.yaml
-      dest: /home/stack/templates/environments/neutron-firewall.yaml
+    - src: files/octavia-environment.yaml
+      dest: /home/stack/templates/environments/octavia-environment.yaml
 
     # OSP11 Private External Nic-config "templates"
     - src: files/nic-configs/11/private/1029p-cephstorage.yaml
@@ -75,6 +79,8 @@ overcloud_tht_files:
 overcloud_tht_templates:
     - src: templates/deploy.yaml.j2
       dest: /home/stack/templates/deploy.yaml
+    - src: templates/neutron-firewall.yaml.j2
+      dest: /home/stack/templates/environments/neutron-firewall.yaml
     - src: templates/network-environment.yaml.j2
       dest: /home/stack/templates/network-environment.yaml
     - src: templates/scheduler-hints.yaml.j2
