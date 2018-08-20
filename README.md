@@ -100,6 +100,7 @@ $ ansible-playbook -i hosts install-browbeat.yaml
 If as a Jenkins Job, define the following parameters:
 
 ```
+OSP_CLUSTER_ID
 BROWBEAT_DNS_SERVER
 BROWBEAT_GRAPHITE_HOST
 BROWBEAT_GRAPHITE_PREFIX
@@ -108,4 +109,23 @@ BROWBEAT_GRAFANA_APIKEY
 BROWBEAT_COLLECTD_COMPUTE
 BROWBEAT_COLLECTD_RABBITMQ
 BROWBEAT_COLLECTD_CEPH
+```
+
+## Updating User on Cluster
+
+From CLI
+
+```
+$ cp hosts.example hosts
+$ # Add Undercloud host to hosts
+$ # Edit vars in vars/update-users.yml or define Environment vars
+$ ansible-playbook -i hosts update-users.yaml
+```
+
+If as a Jenkins Job, define the following parameters:
+
+```
+OCP_ON_OSP_CLUSTER_ID
+OCP_ON_OSP_USER
+OCP_ON_OSP_EMAIL
 ```

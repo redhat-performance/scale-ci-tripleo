@@ -1,0 +1,15 @@
+---
+#
+# Playbook to update who is using the OCP on OSP cluster
+#
+
+- name: Update the User consuming the OCP on OSP Cluster
+  hosts: undercloud
+  gather_facts: false
+  remote_user: stack
+  vars_files:
+    - vars/update-users.yml
+  roles:
+    - name: update-motd
+      vars:
+        update_motd: "{{ocp_on_osp_user}} / {{ocp_on_osp_email}} is using the cluster"

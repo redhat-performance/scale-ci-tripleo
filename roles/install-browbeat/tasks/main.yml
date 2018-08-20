@@ -1,0 +1,83 @@
+---
+# Tasks to install Browbeat
+
+- name: Clone Browbeat on Undercloud
+  git:
+    repo: https://github.com/openstack/browbeat.git
+    dest: /home/stack/browbeat
+    version: master
+    force: true
+
+- name: Create Browbeat Virtual Environment
+  command: virtualenv /home/stack/browbeat/.browbeat-venv creates=/home/stack/browbeat/.browbeat-venv
+
+- name: Install GrafYaml for Browbeat Grafana Dashboards
+  pip:
+    name: "{{item.name}}"
+    version: "{{item.version}}"
+    virtualenv: /home/stack/browbeat/.browbeat-venv
+  with_items:
+    - name: grafyaml
+      version: 0.0.7
+    - name: openstacksdk
+      version: 0.16.0
+
+- name: Generate tripleo hosts and ssh-config
+  shell: |
+    cd /home/stack/browbeat/ansible
+    . /home/stack/stackrc
+    . /home/stack/browbeat/.browbeat-venv/bin/activate
+    cat /home/stack/.ssh/id_rsa.pub >> /home/stack/.ssh/authorized_keys
+    chmod 0600 /home/stack/.ssh/authorized_keys
+    /home/stack/browbeat/ansible/bootstrap.py tripleo
+
+- name: Configure Browbeat Monitoring
+  lineinfile:
+    path: "/home/stack/browbeat/ansible/install/group_vars/all.yml"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.replace }}"
+  with_items: "{{ configuration }}"
+
+# Allows more ssh connections through the undercloud for forks.
+- name: Increase MaxStartups in sshd
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "MaxStartups.*"
+    line: "MaxStartups 100"
+    state: present
+    backup: true
+  become: true
+
+- name: Restart sshd
+  service:
+    name: sshd
+    state: reloaded
+  become: true
+
+- name: Install Browbeat Dashboards Block
+  block:
+    - name: Install Browbeat Dashboards
+      shell: |
+        set -o pipefail
+        cd /home/stack/browbeat/ansible
+        { time  ansible-playbook -i hosts install/grafana-dashboards.yml -e 'upload_general=false upload_static=false upload_templated=false' 2>&1 | tee -a /home/stack/alderaan-deploy/log/browbeat/grafana-dashboards.log ; } 2>> /home/stack/alderaan-deploy/log/browbeat/grafana-dashboards.log
+  always:
+    - name: Collect Install Browbeat Dashboards Artifacts
+      synchronize:
+        src: /home/stack/alderaan-deploy/log/browbeat
+        dest: artifacts
+        mode: pull
+
+- name: Install Browbeat collectd Block
+  block:
+    - name: Deploy collectd on Overcloud
+      shell: |
+        set -o pipefail
+        cd /home/stack/browbeat/ansible
+        { time ansible-playbook -i hosts install/collectd-openstack.yml --forks 50 2>&1 | tee -a /home/stack/alderaan-deploy/log/browbeat/collectd-overcloud-install.log ; } 2>> /home/stack/alderaan-deploy/log/browbeat/collectd-overcloud-install.log
+  always:
+    - name: Collect Install Browbeat collectd Artifacts
+      synchronize:
+        src: /home/stack/alderaan-deploy/log/browbeat
+        dest: artifacts
+        mode: pull

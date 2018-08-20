@@ -1,18 +1,6 @@
 ---
 # tasks file for undercloud-prep
 
-- name: Create the message of the day (motd) file
-  template:
-    backup: yes
-    src: motd.j2
-    dest: /etc/motd
-
-- name: Make sure the motd is displayed when using ssh
-  lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "^PrintMotd.*"
-    line: "PrintMotd yes"
-
 # Scale Lab Pre-deployment tooling lays down vlans to test network before hand
 # Lets remove this to avoid confusion when debugging and to prevent vlan conflicts
 - name: Clean validation vlans
