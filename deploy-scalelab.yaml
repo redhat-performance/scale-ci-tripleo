@@ -42,6 +42,9 @@
         state: directory
       delegate_to: localhost
   roles:
+    - name: update-motd
+      vars:
+        update_motd: "Installing OpenStack {{rhos_release}} Undercloud"
     - undercloud-prepare-host
 
 - name: Run OSP install
@@ -53,7 +56,19 @@
     - vars/deploy.yml
   roles:
     - undercloud-install
+    - name: update-motd
+      vars:
+        update_motd: "Performing Introspection"
     - undercloud-introspection
     - overcloud-prepare-templates
+    - name: update-motd
+      vars:
+        update_motd: "Deploying OpenStack Overcloud"
     - overcloud-deploy
+    - name: update-motd
+      vars:
+        update_motd: "Applying Post Deploy Modifications"
     - post-deploy
+    - name: update-motd
+      vars:
+        update_motd: "OpenStack Deploy Complete"

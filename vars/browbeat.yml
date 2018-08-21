@@ -1,6 +1,8 @@
 ---
 # Browbeat vars
 
+clusterid: "{{ lookup('env', 'OSP_CLUSTER_ID')|default('alderaan', true)}}"
+
 configuration:
   - regexp: "dns_server: [0-9]*.[0-9]*.[0-9]*.[0-9]*"
     replace: "dns_server: {{ lookup('env', 'BROWBEAT_DNS_SERVER') }}"
