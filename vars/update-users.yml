@@ -1,7 +1,0 @@
----
-# update-users vars
-
-clusterid: "{{ lookup('env', 'OCP_ON_OSP_CLUSTER_ID')|default('alderaan', true)}}"
-
-ocp_on_osp_user: "{{ lookup('env', 'OCP_ON_OSP_USER')}}"
-ocp_on_osp_email: "{{ lookup('env', 'OCP_ON_OSP_EMAIL')}}"

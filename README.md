@@ -118,13 +118,21 @@ From CLI
 ```
 $ cp hosts.example hosts
 $ # Add Undercloud host to hosts
-$ # Edit vars in vars/update-users.yml or define Environment vars
-$ ansible-playbook -i hosts update-users.yaml
+$ # Edit vars in vars/update-user.yml or define Environment vars
+$ ansible-playbook -i hosts update-user.yaml
 ```
 
 If as a Jenkins Job, define the following parameters:
 
 ```
+#
+# Ansible SSH parameters
+#
+PUBLIC_KEY
+PRIVATE_KEY
+#
+# Cluster User parameters
+#
 OCP_ON_OSP_CLUSTER_ID
 OCP_ON_OSP_USER
 OCP_ON_OSP_EMAIL
