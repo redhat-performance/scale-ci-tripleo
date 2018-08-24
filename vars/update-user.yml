@@ -1,0 +1,10 @@
+---
+# update-user vars
+
+ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')}}"
+ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')}}"
+
+clusterid: "{{ lookup('env', 'OCP_ON_OSP_CLUSTER_ID')}}"
+
+ocp_on_osp_user: "{{ lookup('env', 'OCP_ON_OSP_USER')}}"
+ocp_on_osp_email: "{{ lookup('env', 'OCP_ON_OSP_EMAIL')}}"

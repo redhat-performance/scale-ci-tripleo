@@ -6,13 +6,6 @@
   delegate_to: localhost
   register: motd_ts
 
-- name: Update with latest Status of Cluster
-  become: true
-  copy:
-    dest: /etc/motd
-    content: |
-      {{motd_ts.stdout}} - {{clusterid}} - {{update_motd}}
-
 - name: Append to the motd history
   become: true
   lineinfile:
@@ -21,6 +14,10 @@
     insertafter: EOF
     line: |-
       {{motd_ts.stdout}} - {{clusterid}} - {{update_motd}}
+
+- name: Update motd with last 4 lines
+  become: true
+  shell: cat /etc/motd.history | tail -n 4 > /etc/motd
 
 - name: Make sure the motd is displayed when using ssh
   become: true

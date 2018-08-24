@@ -3,12 +3,78 @@
 # Playbook to update who is using the OCP on OSP cluster
 #
 
-- name: Update the User consuming the OCP on OSP Cluster
+- name: Get OCP Cluster and set current user on OSP Cluster
   hosts: undercloud
   gather_facts: false
   remote_user: stack
+  vars:
+    ocp_core_cluster: []
   vars_files:
-    - vars/update-users.yml
+    - vars/update-user.yml
+  pre_tasks:
+    - name: Get ansible-host FIP
+      shell: |
+        . /home/stack/overcloudrc
+        openstack server show ansible-host --format value -c addresses | awk '{print $2}'
+      register: ansible_host_fip
+      changed_when: false
+
+    - name: Get OCP Core Cluster with FIPs
+      shell: |
+        . /home/stack/overcloudrc
+        openstack server list --name .*-[0-9]*.scale-ci.example.com --format value -c Name -c Networks --limit -1
+      register: ocp_cluster_fips
+      changed_when: false
+
+    - name: Organize Core Cluster according to machine
+      set_fact:
+        ocp_core_cluster: "{{ ocp_core_cluster }} + [{ 'group': '{{ item.0.group }}', 'name': '{{ item.1.split(' ')[0].split('.')[0] }}', 'private_ip': '{{ item.1.split('=')[1].split(', ')[0] }}', 'public_ip': '{{ item.1.split(', ')[1] }}' }]"
+      with_subelements:
+        - - group: master
+            nodes: "{{ocp_cluster_fips.stdout_lines | select('match','^master') | list}}"
+          - group: infra
+            nodes: "{{ocp_cluster_fips.stdout_lines | select('match','^infra') | list}}"
+          - group: lb
+            nodes: "{{ocp_cluster_fips.stdout_lines | select('match','^lb') | list}}"
+          - group: cns
+            nodes: "{{ocp_cluster_fips.stdout_lines | select('match','^cns') | list}}"
+          - group: app_node
+            nodes: "{{ocp_cluster_fips.stdout_lines | select('match','^app-node-[0-1][.]') | list}}"
+        - nodes
+      changed_when: false
+
+    - name: Add ansible-host to the inventory
+      add_host:
+        name: "{{ansible_host_fip.stdout}}"
+        groups: ["bastion"]
+        ansible_user: cloud-user
+        ansible_ssh_common_args: |-
+          -o ProxyCommand='ssh -i {{ansible_private_key_file}} -W %h:%p stack@{{inventory_hostname}}'
+      changed_when: false
+
+    - name: Adding core OCP cluster to the inventory
+      add_host:
+        name: "{{item.name}}"
+        groups: ["{{item.group}}"]
+        ansible_user: openshift
+        ansible_host: "{{item.public_ip}}"
+        ansible_ssh_common_args: |-
+          -o ProxyCommand='ssh -i {{ansible_private_key_file}} -W %h:%p stack@{{inventory_hostname}}'
+        public_ip: "{{item.public_ip}}"
+        private_ip: "{{item.private_ip}}"
+      with_items: "{{ocp_core_cluster}}"
+      changed_when: false
+
+  roles:
+    - name: update-motd
+      vars:
+        update_motd: "{{ocp_on_osp_user}} / {{ocp_on_osp_email}} is using the cluster"
+
+- name: Update the OCP cluster with the current user
+  hosts: bastion, master, infra, cns, app_node, lb
+  gather_facts: false
+  vars_files:
+    - vars/update-user.yml
   roles:
     - name: update-motd
       vars:
