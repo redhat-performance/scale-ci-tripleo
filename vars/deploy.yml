@@ -57,6 +57,9 @@ instackenv_json: "{{ lookup('env', 'OSP_INSTACKENV_JSON') }}"
 # OpenStack Overcloud Neutron configuration either: iptables_hybrid or openvswitch
 firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
 
+# Deploy Overcloud with Octavia
+overcloud_octavia: "{{ lookup('env', 'OSP_OVERCLOUD_OCTAVIA')|default(true, true) }}"
+
 # Defaults for SLC1 (16 Nodes)
 controller_type: "{{ lookup('env', 'OSP_CONTROLLER_TYPE')|default('1029p', true) }}"
 cephstorage_type: "{{ lookup('env', 'OSP_CEPHSTORAGE_TYPE')|default('1029p', true) }}"
