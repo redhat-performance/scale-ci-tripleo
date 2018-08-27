@@ -44,14 +44,14 @@
   shell: |
     tmux -2 new-session -d -s alderaan-undercloud -n 'root'
     tmux send-keys "cd /var/log" C-m
-    tmux new-window -t alderaan-undercloud:2 -n 'alderaan-deploy-log'
+    tmux new-window -t alderaan-undercloud:1 -n 'alderaan-deploy-log'
     tmux send-keys "su - stack" C-m
     tmux send-keys ". stackrc" C-m
     tmux send-keys "cd /home/stack/alderaan-deploy/log" C-m
-    tmux new-window -t alderaan-undercloud:3 -n 'alderaan-undercloud'
+    tmux new-window -t alderaan-undercloud:2 -n 'alderaan-undercloud'
     tmux send-keys "su - stack" C-m
     tmux send-keys ". stackrc" C-m
-    tmux select-window -t alderaan-undercloud:2
+    tmux select-window -t alderaan-undercloud:1
   when: tmux_install_exists.rc == 1
 
 - name: Overcloud Deploy Block
