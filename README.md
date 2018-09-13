@@ -112,15 +112,15 @@ BROWBEAT_COLLECTD_RABBITMQ
 BROWBEAT_COLLECTD_CEPH
 ```
 
-## Updating User on Cluster
+## Updating motd on Cluster
 
 From CLI
 
 ```
 $ cp hosts.example hosts
 $ # Add Undercloud host to hosts
-$ # Edit vars in vars/update-user.yml or define Environment vars
-$ ansible-playbook -i hosts update-user.yaml
+$ # Edit vars in vars/update-cluster-motd.yml or define Environment vars
+$ ansible-playbook -i hosts update-cluster-motd.yaml
 ```
 
 If as a Jenkins Job, define the following parameters:
@@ -135,6 +135,5 @@ PRIVATE_KEY
 # Cluster User parameters
 #
 OCP_ON_OSP_CLUSTER_ID
-OCP_ON_OSP_USER
-OCP_ON_OSP_EMAIL
+OCP_ON_OSP_MESSAGE
 ```

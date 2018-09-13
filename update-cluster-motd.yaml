@@ -1,16 +1,16 @@
 ---
 #
-# Playbook to update who is using the OCP on OSP cluster
+# Playbook to update a motd on the OSP and OCP clusters
 #
 
-- name: Get OCP Cluster and set current user on OSP Cluster
+- name: Get OCP Cluster and set motd on OSP cluster
   hosts: undercloud
   gather_facts: false
   remote_user: stack
   vars:
     ocp_core_cluster: []
   vars_files:
-    - vars/update-user.yml
+    - vars/update-cluster-motd.yml
   pre_tasks:
     - name: Get ansible-host FIP
       shell: |
@@ -66,16 +66,12 @@
       changed_when: false
 
   roles:
-    - name: update-motd
-      vars:
-        update_motd: "{{ocp_on_osp_user}} / {{ocp_on_osp_email}} is using the cluster"
+    - update-motd
 
-- name: Update the OCP cluster with the current user
+- name: Update the OCP cluster with the current motd
   hosts: bastion, master, infra, cns, app_node, lb
   gather_facts: false
   vars_files:
-    - vars/update-user.yml
+    - vars/update-cluster-motd.yml
   roles:
-    - name: update-motd
-      vars:
-        update_motd: "{{ocp_on_osp_user}} / {{ocp_on_osp_email}} is using the cluster"
+    - update-motd
