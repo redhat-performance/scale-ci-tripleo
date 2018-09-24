@@ -20,6 +20,16 @@
         set -o pipefail
         . /home/stack/stackrc
         { time /home/stack/alderaan-deploy/pin-nodes.sh 2>&1 | tee -a {{log_dir}}/pin-nodes.log ; } 2>> {{log_dir}}/pin-nodes.log
+  rescue:
+    - name: Update motd on failure
+      include_role:
+        name: update-motd
+      vars:
+        update_motd: Node pinning failures
+
+    - name: Ensure playbook stops under this condition
+      fail:
+        msg: Node pinning failures
   always:
     - name: Collect Pin Nodes Artifacts
       synchronize:
@@ -61,7 +71,7 @@
         . /home/stack/stackrc
         /home/stack/alderaan-deploy/overcloud-deploy.sh {{log_dir}}
   rescue:
-     # Collect additional items to sweep into alderaan-deploy/log for debugging in event of failure
+    # Collect additional items to sweep into alderaan-deploy/log for debugging in event of failure
     - name: Collect OpenStack Ironic/Heat/Mistral/Nova log files
       become: true
       shell: |
@@ -85,6 +95,12 @@
         openstack server list --all 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-server-node-list.log
         openstack stack resource list overcloud 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-stack-resource-list.log
         openstack stack failures list overcloud 2>&1 | tee -a {{log_dir}}/overcloud-deploy_openstack-stack-failures-list.log
+
+    - name: Update motd on failure
+      include_role:
+        name: update-motd
+      vars:
+        update_motd: Overcloud deploy failures
 
     - name: Ensure playbook stops under this condition
       fail:

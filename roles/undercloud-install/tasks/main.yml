@@ -51,6 +51,16 @@
 
     - name: Upload images
       shell: . /home/stack/stackrc; openstack overcloud image upload --image-path /home/stack/images/
+  rescue:
+    - name: Update motd on failure
+      include_role:
+        name: update-motd
+      vars:
+        update_motd: Undercloud install failed
+
+    - name: Ensure playbook stops under this condition
+      fail:
+        msg: Undercloud install failures
   always:
     - name: Collect undercloud.conf
       become: true
@@ -119,6 +129,16 @@
           -e /usr/share/openstack-tripleo-heat-templates/environments/services-docker/octavia.yaml \
           -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
           --output-env-file /home/stack/templates/docker_registry.yaml
+  rescue:
+    - name: Update motd on failure
+      include_role:
+        name: update-motd
+      vars:
+        update_motd: Undercloud container registry failures
+
+    - name: Ensure playbook stops under this condition
+      fail:
+        msg: Undercloud container registry failures
   always:
     - name: Collect Setup Container Registry Artifacts
       synchronize:

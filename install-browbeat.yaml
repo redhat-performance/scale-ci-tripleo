@@ -19,8 +19,8 @@
   roles:
     - name: update-motd
       vars:
-        update_motd: "Installing Browbeat"
+        update_motd: Installing Browbeat
     - install-browbeat
     - name: update-motd
       vars:
-        update_motd: "Browbeat Installed"
+        update_motd: Browbeat Installed
