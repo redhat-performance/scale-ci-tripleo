@@ -1,5 +1,7 @@
 ---
-# tasks file for overcloud-prepare-templates
+#
+# Tasks for overcloud-prepare-templates
+#
 
 - name: Copy THT Files into stack user templates directory
   copy:
@@ -26,10 +28,15 @@
     owner: stack
     group: stack
 
-- name: Render the network setup script
+- name: Render post deployment scripts
   template:
-    src: templates/create_public_cluster_network.sh.j2
-    dest: /home/stack/alderaan-deploy/create_public_cluster_network.sh
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
     mode: 0755
     owner: stack
     group: stack
+  with_items:
+    - src: templates/create_public_cluster_network.sh.j2
+      dest: /home/stack/alderaan-deploy/create_public_cluster_network.sh
+    - src: templates/post_deploy_workarounds.sh.j2
+      dest: /home/stack/alderaan-deploy/post_deploy_workarounds.sh
