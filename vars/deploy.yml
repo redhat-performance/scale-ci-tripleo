@@ -7,11 +7,12 @@ ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rs
 ####################################################################################################
 # OpenStack Version/Build Variables
 ####################################################################################################
+# Defaults used below best suit a staging sized environment
 rhos_release_rpm: "{{ lookup('env', 'OSP_RHOS_RELEASE_URL') }}"
 
 # OSP/OSPd versioning and build
 version: "{{ lookup('env', 'OSP_RHOS_VERSION')|default('13', true) }}"
-rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default('7.5', true) }}"
+rhel_version: "{{ lookup('env', 'OSP_RHOS_RHEL_VERSION')|default('7.6', true) }}"
 rhos_release: "{{ lookup('env', 'OSP_RHOS_RELEASE_VERSION')|default('13-director', true) }}"
 build: "{{ lookup('env', 'OSP_RHOS_BUILD')|default('GA', true) }}"
 
@@ -38,16 +39,15 @@ stack_password: "{{ lookup('env', 'OSP_STACK_PASSWORD') }}"
 
 # Introspection parameters:
 # No introspection at all - adjusts instackenv to not require introspection
-instackenv_no_introspection: "{{ lookup('env', 'OSP_INSTACKENV_NO_INTROSPECTION')|default(false, true) }}"
+instackenv_no_introspection: "{{ lookup('env', 'OSP_INSTACKENV_NO_INTROSPECTION')|default(true, true) }}"
 node_provide_timeout: "{{ lookup('env', 'OSP_NODE_PROVIDE_TIMEOUT')|default(1800, true) }}"
 # Introspection (Uses Bulk introspection by default)
-introspection: "{{ lookup('env', 'OSP_INTROSPECTION')|default(true, true) }}"
+introspection: "{{ lookup('env', 'OSP_INTROSPECTION')|default(false, true) }}"
 bulk_introspection_timeout: "{{ lookup('env', 'OSP_BULK_INTROSPECTION_TIMEOUT')|default(3600, true) }}"
 # Introspection Script (Enable to use Script rather than Bulk introspection)
 introspect_with_retry: "{{ lookup('env', 'OSP_INTROSPECTION_SCRIPT')|default(false, true) }}"
-
 # Ironic automated cleaning (Use when introspection script is disabled)
-node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"
+node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(true, true) }}"
 
 ####################################################################################################
 # Overcloud Variables
@@ -55,19 +55,19 @@ node_cleaning: "{{ lookup('env', 'OSP_NODE_CLEANING')|default(false, true) }}"
 instackenv_json: "{{ lookup('env', 'OSP_INSTACKENV_JSON') }}"
 
 # OpenStack Overcloud Neutron configuration either: iptables_hybrid or openvswitch
-firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('openvswitch', true) }}"
+firewall_driver: "{{ lookup('env', 'OSP_FIREWALL_DRIVER')|default('iptables_hybrid', true) }}"
 
 # Deploy Overcloud with Octavia
-overcloud_octavia: "{{ lookup('env', 'OSP_OVERCLOUD_OCTAVIA')|default(true, true) }}"
+overcloud_octavia: "{{ lookup('env', 'OSP_OVERCLOUD_OCTAVIA')|default(false, true) }}"
 
 # Defaults for SLC1 (16 Nodes)
 controller_type: "{{ lookup('env', 'OSP_CONTROLLER_TYPE')|default('1029p', true) }}"
 cephstorage_type: "{{ lookup('env', 'OSP_CEPHSTORAGE_TYPE')|default('1029p', true) }}"
 compute_type: "{{ lookup('env', 'OSP_COMPUTE_TYPE')|default('1029p', true) }}"
 
-num_controllers: "{{ lookup('env', 'OSP_NUM_CONTROLLERS')|default(3, true) }}"
+num_controllers: "{{ lookup('env', 'OSP_NUM_CONTROLLERS')|default(1, true) }}"
 num_storage: "{{ lookup('env', 'OSP_NUM_CEPHSTORAGE')|default(3, true) }}"
-num_compute: "{{ lookup('env', 'OSP_NUM_COMPUTE')|default(9, true) }}"
+num_compute: "{{ lookup('env', 'OSP_NUM_COMPUTE')|default(11, true) }}"
 
 # Must be >= total number of hosts used for undercloud tuning
 total_hosts: "{{ num_controllers|int + num_compute|int + num_storage|int }}"
@@ -87,11 +87,11 @@ openstack_deployment_hosts:
 # The ceph pools pg values to adjust post-deploy.
 ceph_pools:
   - pool_name: vms
-    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VM_PG_NUM')|default('512', true) }}"
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VM_PG_NUM')|default('64', true) }}"
   - pool_name: images
-    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_IMAGES_PG_NUM')|default('128', true) }}"
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_IMAGES_PG_NUM')|default('64', true) }}"
   - pool_name: volumes
-    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VOLUMES_PG_NUM')|default('128', true) }}"
+    pg_num: "{{ lookup('env', 'OSP_CEPH_POOL_VOLUMES_PG_NUM')|default('16', true) }}"
 
 ####################################################################################################
 # Undercloud and Overcloud Network Setup
@@ -106,7 +106,7 @@ ntp_server: "{{ lookup('env', 'OSP_NTP_SERVER') }}"
 # 11_public - OSP11 public external network (Limited public floating ips)
 # 13_private - OSP13 private external network (Unlimited private floating ips)
 # 13_public - OSP13 public external network (Limited public floating ips)
-external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('11_private', true) }}"
+external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('13_private', true) }}"
 
 # Settings for both Network Setups
 dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"
