@@ -1,4 +1,4 @@
-# tripleo-quickstart-scalelab
+# scale-ci-tripleo
 
 Playbook to deploy Tripleo OpenStack on ScaleLab for OpenShift on OpenStack performance and scale testing.
 
@@ -7,10 +7,10 @@ Playbook to deploy Tripleo OpenStack on ScaleLab for OpenShift on OpenStack perf
 From CLI
 
 ```
-$ cp hosts.example hosts
-$ # Add Undercloud host to hosts
+$ cp inventory.example inventory
+$ # Add Undercloud host to inventory
 $ # Edit vars in vars/deploy.yml or define Environment vars
-$ ansible-playbook -i hosts deploy-scalelab.yaml
+$ ansible-playbook -i inventory deploy.yml
 ```
 
 If using environment variables (Ex Jenkins Job Parameters), define the following:
@@ -92,10 +92,10 @@ OSP_PRIVATE_EXTERNAL_NETMASK
 From CLI
 
 ```
-$ cp hosts.example hosts
-$ # Add Undercloud host to hosts
+$ cp inventory.example inventory
+$ # Add Undercloud host to inventory
 $ # Edit vars in vars/browbeat.yml or define Environment vars
-$ ansible-playbook -i hosts install-browbeat.yaml
+$ ansible-playbook -i inventory install-browbeat.yaml
 ```
 
 If as a Jenkins Job, define the following parameters:
@@ -117,10 +117,10 @@ BROWBEAT_COLLECTD_CEPH
 From CLI
 
 ```
-$ cp hosts.example hosts
-$ # Add Undercloud host to hosts
+$ cp inventory.example inventory
+$ # Add Undercloud host to inventory
 $ # Edit vars in vars/update-cluster-motd.yml or define Environment vars
-$ ansible-playbook -i hosts update-cluster-motd.yaml
+$ ansible-playbook -i inventory update-cluster-motd.yaml
 ```
 
 If as a Jenkins Job, define the following parameters:
