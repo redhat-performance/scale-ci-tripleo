@@ -94,8 +94,8 @@ From CLI
 ```
 $ cp inventory.example inventory
 $ # Add Undercloud host to inventory
-$ # Edit vars in vars/browbeat.yml or define Environment vars
-$ ansible-playbook -i inventory install-browbeat.yaml
+$ # Edit vars in vars/install-browbeat.yml or define Environment vars
+$ ansible-playbook -i inventory install-browbeat.yml
 ```
 
 If as a Jenkins Job, define the following parameters:
