@@ -158,20 +158,17 @@ resources:
               - type: ovs_bridge
                 name: br-ex
                 use_dhcp: false
+                addresses:
+                - ip_netmask:
+                    get_param: ExternalIpSubnet
+                routes:
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
                 members:
                 - type: interface
                   name: enp94s0f3
                   primary: true
-                - type: vlan
-                  vlan_id:
-                    get_param: ExternalNetworkVlanID
-                  addresses:
-                  - ip_netmask:
-                      get_param: ExternalIpSubnet
-                  routes:
-                  - default: true
-                    next_hop:
-                      get_param: ExternalInterfaceDefaultRoute
 
 outputs:
   OS::stack_id:

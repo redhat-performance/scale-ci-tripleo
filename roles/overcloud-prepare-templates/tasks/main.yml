@@ -36,7 +36,7 @@
     owner: stack
     group: stack
   with_items:
-    - src: templates/create_public_cluster_network.sh.j2
-      dest: /home/stack/alderaan-deploy/create_public_cluster_network.sh
+    - src: templates/create_external_cluster_network.sh.j2
+      dest: /home/stack/alderaan-deploy/create_external_cluster_network.sh
     - src: templates/post_deploy_workarounds.sh.j2
       dest: /home/stack/alderaan-deploy/post_deploy_workarounds.sh
