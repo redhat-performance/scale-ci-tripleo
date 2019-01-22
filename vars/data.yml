@@ -2,7 +2,6 @@
 # Vars that do not require much (if any) adjustment
 
 installable_osp_versions:
-  - "11"
   - "13"
 
 overcloud_image_password: debug
@@ -12,8 +11,6 @@ overcloud_firewall_drivers:
   - "openvswitch"
 
 overcloud_nic_config_map:
-  11_private: "11/private"
-  11_public: "11/public"
   13_private: "13/private"
   13_public: "13/public"
 
@@ -35,25 +32,12 @@ overcloud_tht_files:
       dest: /home/stack/templates/roles_data-notelem.yaml
     - src: files/octavia-environment.yaml
       dest: /home/stack/templates/environments/octavia-environment.yaml
-
-    # OSP11 Private External Nic-config "templates"
-    - src: files/nic-configs/11/private/1029p-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/11/private/1029p-cephstorage.yaml
-    - src: files/nic-configs/11/private/1029p-compute.yaml
-      dest: /home/stack/templates/nic-configs/11/private/1029p-compute.yaml
-    - src: files/nic-configs/11/private/1029p-controller.yaml
-      dest: /home/stack/templates/nic-configs/11/private/1029p-controller.yaml
-    - src: files/nic-configs/11/private/1029u-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/11/private/1029u-cephstorage.yaml
-    # OSP11 Public External Nic-config "templates"
-    - src: files/nic-configs/11/public/1029p-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/11/public/1029p-cephstorage.yaml
-    - src: files/nic-configs/11/public/1029p-compute.yaml
-      dest: /home/stack/templates/nic-configs/11/public/1029p-compute.yaml
-    - src: files/nic-configs/11/public/1029p-controller.yaml
-      dest: /home/stack/templates/nic-configs/11/public/1029p-controller.yaml
-    - src: files/nic-configs/11/public/1029u-cephstorage.yaml
-      dest: /home/stack/templates/nic-configs/11/public/1029u-cephstorage.yaml
+    - src: files/1029p-storage-environment.yaml
+      dest: /home/stack/templates/1029p-storage-environment.yaml
+    - src: files/1029u-storage-environment.yaml
+      dest: /home/stack/templates/1029u-storage-environment.yaml
+    - src: files/scheduler-hints.yaml
+      dest: /home/stack/templates/scheduler-hints.yaml
 
     # OSP13 Private External Nic-config "templates"
     - src: files/nic-configs/13/private/1029p-cephstorage.yaml
@@ -83,9 +67,3 @@ overcloud_tht_templates:
       dest: /home/stack/templates/environments/neutron-firewall.yaml
     - src: templates/network-environment.yaml.j2
       dest: /home/stack/templates/network-environment.yaml
-    - src: templates/scheduler-hints.yaml.j2
-      dest: /home/stack/templates/scheduler-hints.yaml
-    - src: templates/1029p-storage-environment.yaml.j2
-      dest: /home/stack/templates/1029p-storage-environment.yaml
-    - src: templates/1029u-storage-environment.yaml.j2
-      dest: /home/stack/templates/1029u-storage-environment.yaml

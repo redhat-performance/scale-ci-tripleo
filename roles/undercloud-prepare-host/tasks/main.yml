@@ -25,13 +25,15 @@
     validate_certs: false
 
 - name: Install rhos-release
-  yum: name=/root/rhos-release.rpm
+  yum:
+    name: /root/rhos-release.rpm
 
 - name: Setup OSP version to install
   command: "rhos-release {{rhos_release}} -p {{build}} -r {{rhel_version}}"
 
 - name: Install utilities
-  yum: name={{item}}
+  yum:
+    name: "{{item}}"
   with_items:
     - tmux
     - screen
@@ -47,7 +49,9 @@
     dest: /root/.tmux.conf
 
 - name: Update Packages
-  yum: name=* state=latest
+  yum:
+    name: '*'
+    state: latest
 
 - name: Reboot machine
   shell: "nohup sh -c '( sleep 5 ; shutdown -r now )' &"
@@ -65,11 +69,12 @@
     timeout: 900
 
 - name: Add stack user
-  user: name=stack
+  user:
+    name: stack
 
 - name: Creating the /home/stack/.ssh directory on the server
   file:
-    path: "/home/stack/.ssh"
+    path: /home/stack/.ssh
     state: directory
     mode: 0700
     owner: stack
@@ -77,7 +82,7 @@
 
 - name: Copying the private key to the server
   copy:
-    src: "{{ ansible_private_key_file }}"
+    src: "{{ansible_private_key_file}}"
     dest: "/home/stack/.ssh/id_rsa"
     mode: 0600
     owner: stack
@@ -85,7 +90,7 @@
 
 - name: Copying the public key to the server
   copy:
-    src: "{{ ansible_public_key_file }}"
+    src: "{{ansible_public_key_file}}"
     dest: "/home/stack/.ssh/id_rsa.pub"
     mode: 0644
     owner: stack
@@ -120,8 +125,6 @@
     - /home/stack/templates/environments
     - /home/stack/templates/firstboot
     - /home/stack/templates/nic-configs
-    - /home/stack/templates/nic-configs/11/private
-    - /home/stack/templates/nic-configs/11/public
     - /home/stack/templates/nic-configs/13/private
     - /home/stack/templates/nic-configs/13/public
     - /home/stack/alderaan-deploy
@@ -129,12 +132,12 @@
     - "{{log_dir}}"
 
 - name: Install tripleo
-  yum: name=python-tripleoclient
+  yum:
+    name: python-tripleoclient
 
 - name: Install ceph-ansible
   yum:
     name: ceph-ansible
-  when: version == "13"
 
 - name: Set hostname
   shell: hostnamectl set-hostname {{ansible_fqdn}}
@@ -155,23 +158,23 @@
     owner: stack
     group: stack
 
-- name: Deploy private external vlan interface (external_network_setup = 11_private or 13_private)
+- name: Deploy private external vlan interface (external_network_setup = 13_private)
   template:
     src: templates/ifcfg-vlan.j2
     dest: "/etc/sysconfig/network-scripts/ifcfg-{{undercloud_external_vlan_device}}"
     owner: root
     group: root
-  when: external_network_setup == "11_private" or external_network_setup == "13_private"
+  when: external_network_setup == "13_private"
 
-- name: Turn on private external vlan interface (external_network_setup = 11_private or 13_private)
+- name: Turn on private external vlan interface (external_network_setup = 13_private)
   shell: ifup {{undercloud_external_vlan_device}}
-  when: external_network_setup == "11_private" or external_network_setup == "13_private"
+  when: external_network_setup == "13_private"
 
-- name: Setup traffic fowarding for private external network (external_network_setup = 11_private or 13_private)
+- name: Setup traffic fowarding for private external network (external_network_setup = 13_private)
   shell: |
      echo 1 > /proc/sys/net/ipv4/ip_forward
      iptables -t nat -A POSTROUTING -o {{undercloud_public_interface}} -j MASQUERADE
      iptables -A FORWARD -i {{undercloud_public_interface}} -o {{undercloud_external_vlan_device}} -m state --state RELATED,ESTABLISHED -j ACCEPT
      iptables -A FORWARD -i {{undercloud_external_vlan_device}} -o {{undercloud_public_interface}} -j ACCEPT
      iptables-save > /etc/sysconfig/iptables
-  when: external_network_setup == "11_private" or external_network_setup == "13_private"
+  when: external_network_setup == "13_private"
