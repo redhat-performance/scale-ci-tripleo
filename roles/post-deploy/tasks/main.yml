@@ -3,12 +3,16 @@
 # Tasks for post deployment
 #
 
-- name: Create the public network and subnet
+- name: Create the public external network and subnet
   shell: |
-    . /home/stack/overcloudrc
-    /home/stack/alderaan-deploy/create_public_cluster_network.sh
+    /home/stack/alderaan-deploy/create_external_cluster_network.sh public
+  when: external_network_setup == "11_public" or external_network_setup == "13_public"
+
+- name: Create the private external network and subnet
+  shell: |
+    /home/stack/alderaan-deploy/create_external_cluster_network.sh private
+  when: external_network_setup == "11_private" or external_network_setup == "13_private"
 
 - name: Run post deploy workarounds
   shell: |
-    . /home/stack/stackrc
     /home/stack/alderaan-deploy/post_deploy_workarounds.sh {{log_dir}}

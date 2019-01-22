@@ -110,7 +110,6 @@ external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default(
 
 # Settings for both Network Setups
 dns_server: "{{ lookup('env', 'OSP_DNS_SERVER') }}"
-external_vlan: "{{ lookup('env', 'OSP_EXTERNAL_VLAN')|default('10', true) }}"
 external_network_pool_start: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_START')|default('172.21.0.3', true) }}"
 external_network_pool_end: "{{ lookup('env', 'OSP_EXTERNAL_NET_POOL_END')|default('172.21.0.254', true) }}"
 external_network_gateway: "{{ lookup('env', 'OSP_EXTERNAL_NET_GATEWAY')|default('172.21.0.1', true) }}"
@@ -122,6 +121,9 @@ fip_pool_start: "{{ lookup('env', 'OSP_FIP_POOL_START')|default('172.21.1.1', tr
 fip_pool_end: "{{ lookup('env', 'OSP_FIP_POOL_END')|default('172.21.255.254', true) }}"
 
 # Network settings specific to private external network setup
+# External vlan IDs are only in use for the private external network according to the latest scalelab iteration
+external_vlan: "{{ lookup('env', 'OSP_EXTERNAL_VLAN')|default('10', true) }}"
+
 undercloud_public_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_PUBLIC_INTERFACE')|default('eno1', true) }}"
 undercloud_external_vlan_device: "{{ lookup('env', 'OSP_UNDERCLOUD_PRIVATE_EXTERNAL_INTERFACE')|default('enp94s0f3', true) }}.{{external_vlan}}"
 

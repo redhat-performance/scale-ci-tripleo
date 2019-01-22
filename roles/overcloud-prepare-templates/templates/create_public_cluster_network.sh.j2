@@ -1,4 +1,0 @@
-#!/bin/bash
-set -x
-openstack network create --share --external --provider-physical-network datacentre --provider-network-type vlan --provider-segment {{ external_vlan }} public --format json
-openstack subnet create --allocation-pool start={{fip_pool_start}},end={{fip_pool_end}} --gateway={{external_network_gateway}} --no-dhcp --dns-nameserver {{dns_server}} --network public --subnet-range {{external_network_cidr}} public_subnet --format json
