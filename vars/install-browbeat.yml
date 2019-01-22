@@ -1,6 +1,12 @@
 ---
-# Browbeat vars
+# The path to the public key to use in this automation.
+ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')|default('~/.ssh/id_rsa.pub', true) }}"
+# The path to the private key to access servers using the keypair.
+ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rsa', true) }}"
 
+####################################################################################################
+# Browbeat Variables
+####################################################################################################
 clusterid: "{{ lookup('env', 'OSP_CLUSTER_ID')|default('alderaan', true)}}"
 
 configuration:
