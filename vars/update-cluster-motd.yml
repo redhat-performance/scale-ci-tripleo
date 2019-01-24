@@ -1,8 +1,12 @@
 ---
-# update-cluster-motd vars
+####################################################################################################
+# Ansible SSH variables.
+####################################################################################################
+ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')|default('~/.ssh/id_rsa.pub', true) }}"
+ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rsa', true) }}"
 
-ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')}}"
-ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')}}"
-
+####################################################################################################
+# Update-cluster-motd variables.
+####################################################################################################
 clusterid: "{{ lookup('env', 'OCP_ON_OSP_CLUSTER_ID')}}"
 update_motd: "{{ lookup('env', 'OCP_ON_OSP_MESSAGE')}}"

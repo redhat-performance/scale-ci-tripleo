@@ -1,7 +1,8 @@
 ---
-# The path to the public key to use in this automation.
+####################################################################################################
+# Ansible SSH variables.
+####################################################################################################
 ansible_public_key_file: "{{ lookup('env', 'PUBLIC_KEY')|default('~/.ssh/id_rsa.pub', true) }}"
-# The path to the private key to access servers using the keypair.
 ansible_private_key_file: "{{ lookup('env', 'PRIVATE_KEY')|default('~/.ssh/id_rsa', true) }}"
 
 ####################################################################################################
@@ -102,8 +103,6 @@ local_interface: "{{ lookup('env', 'OSP_UNDERCLOUD_LOCAL_INTERFACE')|default('en
 ntp_server: "{{ lookup('env', 'OSP_NTP_SERVER') }}"
 
 # External Network Setup:
-# 11_private - OSP11 private external network (Unlimited private floating ips)
-# 11_public - OSP11 public external network (Limited public floating ips)
 # 13_private - OSP13 private external network (Unlimited private floating ips)
 # 13_public - OSP13 public external network (Limited public floating ips)
 external_network_setup: "{{ lookup('env', 'OSP_EXTERNAL_NETWORK_SETUP')|default('13_private', true) }}"

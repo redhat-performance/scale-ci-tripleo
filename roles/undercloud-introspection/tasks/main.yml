@@ -31,17 +31,10 @@
     . /home/stack/stackrc
     openstack overcloud node import /home/stack/instackenv.json
 
-- name: OSP11 Configure boot
-  shell: |
-    . /home/stack/stackrc
-    openstack baremetal configure boot
-  when: version == '11'
-
-- name: OSP13 Configure boot
+- name: Configure boot
   shell: |
     . /home/stack/stackrc
     openstack overcloud node configure --all-manageable
-  when: version == '13'
 
 - name: Copy introspection script to Undercloud
   copy:

@@ -3,10 +3,5 @@ parameter_defaults:
     'capabilities:node': 'controller-%index%'
   CephStorageSchedulerHints:
     'capabilities:node': 'cephstorage-%index%'
-{% if version == '11' %}
-  NovaComputeSchedulerHints:
-    'capabilities:node': 'novacompute-%index%'
-{% else %}
   ComputeSchedulerHints:
     'capabilities:node': 'novacompute-%index%'
-{% endif %}
